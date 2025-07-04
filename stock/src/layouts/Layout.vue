@@ -1,28 +1,20 @@
 <script setup>
-import HelloWorld from '../components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
+import AppTopbar from "./AppTopbar.vue";
+import Breadcrumb from '../utils/Breadcrumb.vue'
 </script>
 
 <template>
-    <div>
-        <a href="https://vite.dev" target="_blank">
-        </a>
-        <a href="https://vuejs.org/" target="_blank">
-        </a>
+    <div class="layout-container">
+        <div class="topbar">
+            <div class="topbar-container">
+                <Breadcrumb icon='pi-money-bill' brand="YieldMax" title="YMAX" msg="상세 메세지" />
+                <AppTopbar />
+            </div>
+        </div>
+        
+        <div class="layout-grid">
+            <RouterView />
+        </div>
     </div>
-    <HelloWorld msg="Vite + Vue" />
-  </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+</template>
