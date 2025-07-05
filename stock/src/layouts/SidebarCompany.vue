@@ -13,6 +13,13 @@ const itemsCompany = ref([
     { route: '3', label: 'JP Morgan' }
 ]);
 
+const LinkYieldMax = ref([
+    { route: '/', label: 'YieldMax'},
+    { route: '/', label: 'Roundhill'},
+    { route: '/', label: 'Defiance'},
+    { route: '/', label: 'JP Morgan' }
+]);
+
 </script>
 
 
@@ -33,7 +40,15 @@ const itemsCompany = ref([
                     </ul>
                 </TabPanel>
                 <TabPanel value="1">
-                    11111111
+                    <Fieldset legend="YieldMax™ Covered Call ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Fund of Funds ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Ultra ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Short Option Income ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Target 12™ ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Dorsey Wright ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ Portfolio ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax™ 0DTE ETFs"></Fieldset>
+                    <Fieldset legend="YieldMax UCITS Funds"></Fieldset>
                 </TabPanel>
                 <TabPanel value="2">
                     2222222222

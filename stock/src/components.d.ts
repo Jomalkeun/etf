@@ -16,6 +16,7 @@ declare module 'vue' {
     Chart: typeof import('primevue/chart')['default']
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
+    Fieldset: typeof import('primevue/fieldset')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     IconField: typeof import('primevue/iconfield')['default']
     InputIcon: typeof import('primevue/inputicon')['default']

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import path from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
@@ -17,5 +18,10 @@ export default defineConfig({
       resolvers: [PrimeVueResolver()], // PrimeVue 컴포넌트 자동 인식
       dts: 'src/components.d.ts',      // 타입 지원 파일 생성
     }),
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
 })
