@@ -12,19 +12,9 @@ import ProductOverviewWidget from "../components/dashboard/ProductOverviewWidget
 
 <template>
     <div class="layout-container">
-        <div class="topbar">
-            <div class="topbar-container">
-                <Breadcrumb icon='pi-money-bill' brand="YieldMax" title="YMAX" msg="상세 메세지" />
-                <AppTopbar />
-            </div>
-        </div>
-        
         <div class="layout-grid">
-            <RouterView />
+            <AppTopbar />
         </div>
-    </div>
-    <div class="layout-container">
-        <AppTopbar />
         <div class="layout-grid">
             <StatsWidget />
             <div class="layout-grid-row">
@@ -34,5 +24,18 @@ import ProductOverviewWidget from "../components/dashboard/ProductOverviewWidget
             <ProductOverviewWidget />
         </div>
         <AppFooter />
+    </div>
+    
+    <div class="layout-container">
+        
+        <div class="topbar">
+            <div class="topbar-container">
+                <Breadcrumb icon='pi-money-bill' brand="YieldMax" title="YMAX" msg="상세 메세지" />
+            </div>
+        </div>
+        
+        <div class="layout-grid">
+            <RouterView />
+        </div>
     </div>
 </template>
