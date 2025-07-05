@@ -37,7 +37,7 @@ const visible = ref(false);
                 rounded @click="visible = true" />
                 
         <div class="card flex justify-center">
-            <Drawer v-model:visible="visible">
+            <Drawer v-model:visible="visible" position="full">
                 <AppSidebar />
             </Drawer>
         </div>
