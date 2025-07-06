@@ -1,4 +1,6 @@
-import "./assets/styles/main.scss";
+import "./styles/global.scss";
+import "./styles/dashboard.scss";
+import "./styles/custom.scss";
 
 import { createApp } from 'vue'
 import App from './App.vue'
