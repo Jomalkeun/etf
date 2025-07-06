@@ -9,11 +9,10 @@ import { ref } from "vue";
 const itemsCompany = ref([
     { route: '0', label: 'YieldMax'},
     { route: '1', label: 'Roundhill'},
-    { route: '2', label: 'Defiance'},
-    { route: '3', label: 'JP Morgan' }
+    { route: '2', label: 'ETC' }
 ]);
 
-const LinkYieldMaxCoveredCall = ref([
+const YieldMaxCoveredCall = ref([
     { route: '/tsly', label: 'TSLY' },
     { route: '/oark', label: 'OARK' },
     { route: '/aply', label: 'APLY' },
@@ -47,18 +46,18 @@ const LinkYieldMaxCoveredCall = ref([
     { route: '/brkc', label: 'BRKC' }
 ]);
 
-const LinkYieldMaxFundofFunds = ref([
+const YieldMaxFundofFunds = ref([
     { route: '/ymax', label: 'YMAX' },
     { route: '/ymag', label: 'YMAG' },
     { route: '/fivy', label: 'FIVY' },
     { route: '/feat', label: 'FEAT' }
 ]);
 
-const LinkYieldMaxUltra = ref([
+const YieldMaxUltra = ref([
     { route: '/ulty', label: 'ULTY' }
 ]);
 
-const LinkYieldMaxShortOptionIncome = ref([
+const YieldMaxShortOptionIncome = ref([
     { route: '/crsh', label: 'CRSH' },
     { route: '/fiat', label: 'FIAT' },
     { route: '/dips', label: 'DIPS' },
@@ -66,23 +65,24 @@ const LinkYieldMaxShortOptionIncome = ref([
     { route: '/wntr', label: 'WNTR' }
 ]);
 
-const LinkYieldMaxTarget12 = ref([
+const YieldMaxTarget12 = ref([
     { route: '/bigy', label: 'BIGY' },
     { route: '/soxy', label: 'SOXY' },
     { route: '/rnty', label: 'SOXY' }
 ]);
 
-const LinkYieldMaxDorseyWright = ref([
+const YieldMaxDorseyWright = ref([
     { route: '/feat', label: 'FEAT' },
     { route: '/fivy', label: 'FIVY' }
 ]);
 
-const LinkYieldMaxPortfolio = ref([
+const YieldMaxPortfolio = ref([
+    { route: '/lfgy', label: 'LFGY' },
     { route: '/gpty', label: 'GPTY' },
     { route: '/chpy', label: 'CHPY' }
 ]);
 
-const LinkYieldMax0DTE = ref([
+const YieldMax0DTE = ref([
     { route: '/sdty', label: 'SDTY' },
     { route: '/qdty', label: 'QDTY' },
     { route: '/rdty', label: 'RDTY' }
@@ -120,12 +120,31 @@ const DefianceIncome = ref([
     { route: '/qqqt', label: 'QQQT' },
     { route: '/usoy', label: 'USOY' },
     { route: '/gldy', label: 'GLDY' },
+    { route: '/mst', label: 'MST' },
 ]);
 
+const RexIncome = ref([
+    { route: '/coii', label: 'COII' },
+    { route: '/msii', label: 'MSII' },
+    { route: '/nvii', label: 'NVII' },
+    { route: '/tsii', label: 'TSII' },
+]);
 const JPMorganIncome = ref([
     { route: '/jepi', label: 'JEPI' },
     { route: '/jepq', label: 'JEPQ' },
     { route: '/jfli', label: 'JFLI' },
+]);
+
+const GranitesharesYieldBOOST = ref([
+    { route: '/xbty', label: 'XBTY' },
+    { route: '/nvyy', label: 'NVYY' },
+    { route: '/tqqy', label: 'TQQY' },
+    { route: '/yspy', label: 'YSPY' },
+    { route: '/tsyy', label: 'TSYY' },
+]);
+
+const SchwabDividend = ref([
+    { route: '/schd', label: 'SCHD' },
 ]);
 </script>
 
@@ -134,49 +153,49 @@ const JPMorganIncome = ref([
 <template>
         <Tabs value="0">
             <TabList class="flex-wrap">
-                <Tab v-for="tab in itemsCompany" :key="tab.label" :value="tab.route"  class="flex items-center gap-2 text-lg col-6 md:col-3 justify-content-center">
+                <Tab v-for="tab in itemsCompany" :key="tab.label" :value="tab.route"  class="flex items-center gap-2 text-lg col-4 md:col-4 justify-content-center">
                     <span class="whitespace-nowrap">{{ tab.label }}</span>
                 </Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0">
                     <Fieldset legend="YieldMax™ Covered Call ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxCoveredCall" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxCoveredCall" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Fund of Funds ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxFundofFunds" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxFundofFunds" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Ultra ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxUltra" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxUltra" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Short Option Income ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxShortOptionIncome" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxShortOptionIncome" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Target 12™ ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxTarget12" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxTarget12" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Dorsey Wright ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxDorseyWright" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxDorseyWright" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Portfolio ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMaxPortfolio" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMaxPortfolio" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ 0DTE ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMax0DTE" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in YieldMax0DTE" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
@@ -194,18 +213,33 @@ const JPMorganIncome = ref([
                     </Fieldset>
                 </TabPanel>
                 <TabPanel value="2">
-                    <Fieldset legend="Defiance Income ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in DefianceIncome" variant="text">
+
+                    <Fieldset legend="Schwab Dividend ETF">
+                        <Button asChild v-slot="slotProps" v-for="tab in SchwabDividend" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
-                </TabPanel>
-                <TabPanel value="3">
                     <Fieldset legend="JP Morgan Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in JPMorganIncome" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
+                    <Fieldset legend="Defiance Income ETFs">
+                        <Button asChild v-slot="slotProps" v-for="tab in DefianceIncome" variant="text">
+                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                        </Button>
+                    </Fieldset>
+                    <Fieldset legend="Graniteshares YieldBOOST ETFs">
+                        <Button asChild v-slot="slotProps" v-for="tab in GranitesharesYieldBOOST" variant="text">
+                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                        </Button>
+                    </Fieldset>
+                    <Fieldset legend="REX Weekly Paying Growth + Income ETFs">
+                        <Button asChild v-slot="slotProps" v-for="tab in RexIncome" variant="text">
+                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                        </Button>
+                    </Fieldset>
+                    
                 </TabPanel>
             </TabPanels>
         </Tabs>
