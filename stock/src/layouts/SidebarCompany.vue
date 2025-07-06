@@ -111,7 +111,25 @@ const RoundhillWeeklyPay = ref([
     { route: '/pltw', label: 'PLTW' },
     { route: '/tslw', label: 'TSLW' }
 ]);
+
+const DefianceIncome = ref([
+    { route: '/qqqy', label: 'QQQY' },
+    { route: '/wdte', label: 'WDTE' },
+    { route: '/iwmy', label: 'IWMY' },
+    { route: '/spyt', label: 'SPYT' },
+    { route: '/qqqt', label: 'QQQT' },
+    { route: '/usoy', label: 'USOY' },
+    { route: '/gldy', label: 'GLDY' },
+]);
+
+const JPMorganIncome = ref([
+    { route: '/jepi', label: 'JEPI' },
+    { route: '/jepq', label: 'JEPQ' },
+    { route: '/jfli', label: 'JFLI' },
+]);
 </script>
+
+
 
 <template>
         <Tabs value="0">
@@ -170,20 +188,24 @@ const RoundhillWeeklyPay = ref([
                         </Button>
                     </Fieldset>
                     <Fieldset legend="Roundhill 0DTE ETFs">
-                        <Button asChild v-slot="slotProps" v-for="tab in LinkYieldMax0DTE" variant="text">
+                        <Button asChild v-slot="slotProps" v-for="tab in RoundhillWeeklyPay" variant="text">
                             <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                 </TabPanel>
                 <TabPanel value="2">
-                    <ul>
-                        <li><RouterLink to="/">Home</RouterLink></li>
-                        <li><RouterLink to="/about">About</RouterLink></li>
-                        <li><RouterLink to="/dashboard">Dashboard</RouterLink></li>
-                    </ul>
+                    <Fieldset legend="Defiance Income ETFs">
+                        <Button asChild v-slot="slotProps" v-for="tab in DefianceIncome" variant="text">
+                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                        </Button>
+                    </Fieldset>
                 </TabPanel>
                 <TabPanel value="3">
-                    3333333
+                    <Fieldset legend="JP Morgan Income ETFs">
+                        <Button asChild v-slot="slotProps" v-for="tab in JPMorganIncome" variant="text">
+                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                        </Button>
+                    </Fieldset>
                 </TabPanel>
             </TabPanels>
         </Tabs>
