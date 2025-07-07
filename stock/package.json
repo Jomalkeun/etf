@@ -10,8 +10,7 @@
     "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
     "lint:eslint": "eslint . --fix",
     "lint": "run-s lint:*",
-    "format": "prettier --write src/",
-    "deploy": "vite build && gh-pages -d dist"
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "@primeuix/themes": "^1.0.0",
