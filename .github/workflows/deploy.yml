@@ -24,30 +24,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      # 1. Node.js를 설정합니다.
-      # 이제 모든 파일은 루트에 체크아웃된 stock 폴더를 기준으로 합니다.
+      # Node.js를 설치합니다. 캐시 설정은 잠시 제거합니다.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          # 캐시 경로를 'stock/package-lock.json'으로 정확히 지정합니다.
-          cache-dependency-path: stock/package-lock.json
 
-      # 2. 의존성을 설치합니다.
-      # 모든 명령어는 이제 'stock' 폴더 안에서 실행해야 합니다.
-      - name: Install dependencies
-        run: npm install --prefix ./stock
-
-      # 3. 프로젝트를 빌드합니다.
-      - name: Build
-        run: npm run build --prefix ./stock
+      # --- 가장 중요: 모든 작업을 하나의 단계로 합칩니다. ---
+      - name: Install dependencies and Build Project
+        run: |
+          # 1. 'stock' 폴더로 이동합니다.
+          cd stock
+          
+          # 2. 이동한 폴더에서 의존성을 설치합니다.
+          npm ci
+          
+          # 3. 이동한 폴더에서 프로젝트를 빌드합니다.
+          npm run build
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
-      # 4. 빌드 결과물을 업로드합니다.
-      # 경로는 './stock/dist'가 맞습니다.
+      # 업로드할 경로는 './stock/dist'가 맞습니다.
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
