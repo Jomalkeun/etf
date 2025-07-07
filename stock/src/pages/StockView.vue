@@ -57,10 +57,35 @@ watch(() => route.params.ticker, (newTicker) => {
 onMounted(() => {
   fetchData(ticker.value);
 });
+
+const home = ref({
+    icon: 'pi pi-home',
+    route: '/home'
+});
+
+const items = ref([
+    { label: '라운드힐', route: '/roundhill'  },
+    // { label: ${tickerName} }
+]);
 </script>
 
 <template>
   <div class="card">
+
+    <Breadcrumb :home="home" :model="items">
+        <template #item="{ item, props }">
+            <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                <a :href="href" v-bind="props.action" @click="navigate">
+                    <span :class="[item.icon, 'text-color']" />
+                    <span class="text-primary font-semibold">{{ item.label }}</span>
+                </a>
+            </router-link>
+            <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+                <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+            </a>
+        </template>
+    </Breadcrumb>
+
     <h2>{{ ticker.toUpperCase() }} 분배금 정보</h2>
     
     <div v-if="isLoading" class="p-d-flex p-jc-center p-ai-center" style="height: 200px;">

@@ -11,6 +11,7 @@ declare module 'vue' {
     AppConfig: typeof import('./components/AppConfig.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppTopbar: typeof import('./components/AppTopbar.vue')['default']
+    Breadcrumb: typeof import('primevue/breadcrumb')['default']
     Button: typeof import('primevue/button')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']

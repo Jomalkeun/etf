@@ -68,11 +68,11 @@ def scrape_roundhill(driver, ticker, error_dir):
             # Roundhill 사이트는 항상 5개의 열을 가집니다.
             if len(cols) == 5:
                  record = {
-                    'Declaration': cols[0].text.strip(),
-                    'Ex Date': cols[1].text.strip(),
-                    'Record Date': cols[2].text.strip(),
-                    'Pay Date': cols[3].text.strip(),
-                    'Amount Paid': cols[4].text.strip(),
+                    '배당공시': cols[0].text.strip(),
+                    '배당락': cols[1].text.strip(),
+                    '주주확정': cols[2].text.strip(),
+                    '배당지급일': cols[3].text.strip(),
+                    '배당금': cols[4].text.strip(),
                  }
                  data.append(record)
         return data
