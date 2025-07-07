@@ -36,7 +36,7 @@ def setup_driver():
 # --- 범용 크롤링 함수들 ---
 
 # 1. Roundhill 함수 사이트 전용 범용 함수 (NEW & IMPROVED)
-def scrape_roundhill(driver, ticker):
+def scrape_roundhill(driver, ticker, error_dir):
     """
     roundhillinvestments.com 사이트의 모든 ETF를 처리하는 범용 함수.
     ticker 이름만 바꿔서 호출하면 됩니다.
@@ -78,13 +78,15 @@ def scrape_roundhill(driver, ticker):
         return data
     except Exception as e:
         print(f"Error scraping {ticker.upper()}: {type(e).__name__} - {e}")
-        driver.save_screenshot(f'{ticker.lower()}_error.png')
+        # 저장 경로를 error_dir 안으로 설정
+        file_path = os.path.join(error_dir, f'{ticker.lower()}_error.png')
+        driver.save_screenshot(file_path) # 이 부분이 올바르게 되어 있는지 확인
         return []
     
 
 
 # 2. YieldMax 함수 (Shadow DOM 쿠키 팝업 해결 최종 버전)
-def scrape_yieldmax(driver, url_ticker):
+def scrape_yieldmax(driver, url_ticker, error_dir):
     """
     yieldmaxetfs.com의 Shadow DOM으로 구현된 쿠키 팝업을 해결합니다.
     """
@@ -111,7 +113,7 @@ def scrape_yieldmax(driver, url_ticker):
             print(f"Cookie banner (Shadow DOM) not found or failed to click for {url_ticker.upper()}. Proceeding... Error: {e}")
 
         # --- 기존 테이블 스크래핑 로직 ---
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 5)
         wait.until(EC.visibility_of_element_located((By.XPATH, "//h2[text()='Distributions']/following-sibling::div//table/tbody")))
         
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -131,12 +133,13 @@ def scrape_yieldmax(driver, url_ticker):
         return data
     except Exception as e:
         print(f"Error scraping {url_ticker.upper()}: {type(e).__name__} - {e}")
-        driver.save_screenshot(f'{url_ticker.lower()}_error.png')
-        return []    
+        file_path = os.path.join(error_dir, f'{url_ticker.lower()}_error.png')
+        driver.save_screenshot(file_path)
+        return []  
     
     
 # YieldMax 사이트 전용 API 스크래핑 함수 (Selenium 불필요!)
-def scrape_yieldmax_api(url_ticker):
+def scrape_yieldmax_api(url_ticker, error_dir):
     """
     yieldmaxetfs.com 사이트는 2단계 API 요청으로 데이터를 가져옵니다.
     1. 메인 페이지에서 포스트 ID를 알아냅니다.
@@ -181,9 +184,10 @@ def scrape_yieldmax_api(url_ticker):
                 data.append(dict(zip(headers, cols)))
         return data
     except Exception as e:
-        print(f"Error scraping {url_ticker.upper()}: {type(e).__name__} - {e}")
-        driver.save_screenshot(f'{url_ticker.lower()}_error.png')
-        return []    
+        print(f"Error scraping JEPI: {type(e).__name__} - {e}")
+        file_path = os.path.join(error_dir, 'jepi_error.png')
+        driver.save_screenshot(file_path)
+        return []
     
 
 
