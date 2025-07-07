@@ -32,3 +32,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+
+# Selenium/Chrome Profile
+/chrome_profile/
+*.png
