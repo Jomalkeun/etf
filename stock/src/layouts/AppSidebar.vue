@@ -8,14 +8,6 @@ import { ref } from "vue";
 
 import SidebarCompany from "./SidebarCompany.vue";
 import SidebarPeriod from "./SidebarPeriod.vue";
-
-const items = ref([
-    { route: '/dashboard', label: 'Dashboard', icon: 'pi pi-home' },
-    { route: '/transactions', label: 'Transactions', icon: 'pi pi-chart-line' },
-    { route: '/products', label: 'Products', icon: 'pi pi-list' },
-    { route: '/messages', label: 'Messages', icon: 'pi pi-inbox' }
-]);
-
 </script>
 
 
