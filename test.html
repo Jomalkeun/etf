@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Fetch Test</title>
+</head>
+<body>
+    <h1>Testing fetch('/data/xdte.json')...</h1>
+    <p>Check the browser console (F12) for results.</p>
+
+    <script>
+        console.log("Test page loaded. Attempting to fetch...");
+        
+        fetch('/data/xdte.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status} (${response.statusText})`);
+                }
+                console.log("Fetch successful! Parsing JSON...");
+                return response.json();
+            })
+            .then(data => {
+                console.log("SUCCESS! JSON data is:", data);
+                document.body.innerHTML += '<h2 style="color: green;">SUCCESS! Data loaded. Check console.</h2>';
+            })
+            .catch(error => {
+                console.error("FAILURE! Could not fetch the file.", error);
+                document.body.innerHTML += `<h2 style="color: red;">FAILURE! ${error.message}</h2>`;
+            });
+    </script>
+</body>
+</html>
