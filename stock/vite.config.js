@@ -10,7 +10,7 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // GitHub 저장소 이름을 정확히 입력합니다.
-  const repoName = 'stock'
+  const repoName = 'etf'
 
   return {
     // ---------------------------------------------------------------
