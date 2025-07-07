@@ -8,7 +8,7 @@ import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ command }) => {
   // GitHub 저장소 이름을 정확히 입력합니다.
   const repoName = 'etf'
 

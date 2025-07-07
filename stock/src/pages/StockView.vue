@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { joinURL } from 'ufo'; 
 
 // PrimeVue 컴포넌트 (예: DataTable)
 import DataTable from 'primevue/datatable';
@@ -21,7 +22,7 @@ const fetchData = async (tickerName) => {
   // --- 바로 이 부분입니다! ---
   // public 폴더는 웹 서버의 루트(/) 경로가 됩니다.
   // 따라서 경로는 항상 '/'로 시작해야 가장 안정적입니다.
-  const url = `/data/${tickerName.toLowerCase()}.json`;
+const url = joinURL(import.meta.env.BASE_URL, `/data/${tickerName.toLowerCase()}.json`);
   console.log('Fetching data from URL:', url); // <--- 디버깅을 위한 로그 추가!
 
   try {
