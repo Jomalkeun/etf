@@ -13,6 +13,7 @@ declare module 'vue' {
     AppTopbar: typeof import('./components/AppTopbar.vue')['default']
     Breadcrumb: typeof import('primevue/breadcrumb')['default']
     Button: typeof import('primevue/button')['default']
+    Chart: typeof import('primevue/chart')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     ProductOverviewWidget: typeof import('./components/dashboard/ProductOverviewWidget.vue')['default']

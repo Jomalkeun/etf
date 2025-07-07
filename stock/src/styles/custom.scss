@@ -1,7 +1,18 @@
-
 // 전체 메뉴
 .p-drawer-full {
     .p-tablist-tab-list {
         flex-wrap: wrap;
     }
+}
+
+// 차트
+#p-chart {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    > div,
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+
 }
