@@ -6,6 +6,20 @@
 import { RouterLink } from 'vue-router'
 import { ref } from "vue";
 
+// 부모로부터 onItemClick 이라는 이름의 함수를 prop으로 받습니다.
+const props = defineProps({
+  onItemClick: {
+    type: Function,
+    default: () => {} // 기본값 설정으로 에러 방지
+  }
+});
+
+// 버튼을 클릭했을 때 실행될 함수
+const handleLinkClick = () => {
+  // 부모로부터 받은 함수를 실행합니다.
+  props.onItemClick(); 
+};
+
 const itemsCompany = ref([
     { route: '0', label: 'YieldMax'},
     { route: '1', label: 'Roundhill'},
@@ -151,7 +165,7 @@ const SchwabDividend = ref([
 
 
 <template>
-        <Tabs value="0">
+        <Tabs value="1">
             <TabList class="flex-wrap">
                 <Tab v-for="tab in itemsCompany" :key="tab.label" :value="tab.route"  class="flex items-center gap-2 text-lg col-4 md:col-4 justify-content-center">
                     <span class="whitespace-nowrap">{{ tab.label }}</span>
@@ -161,54 +175,54 @@ const SchwabDividend = ref([
                 <TabPanel value="0">
                     <Fieldset legend="YieldMax™ Covered Call ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxCoveredCall" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Fund of Funds ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxFundofFunds" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Ultra ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxUltra" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Short Option Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxShortOptionIncome" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Target 12™ ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxTarget12" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Dorsey Wright ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxDorseyWright" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ Portfolio ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMaxPortfolio" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="YieldMax™ 0DTE ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in YieldMax0DTE" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                 </TabPanel>
                 <TabPanel value="1">
                     <Fieldset legend="Roundhill Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in RoundhillIncome" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="Roundhill 0DTE ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in RoundhillWeeklyPay" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                 </TabPanel>
@@ -216,27 +230,27 @@ const SchwabDividend = ref([
 
                     <Fieldset legend="Schwab Dividend ETF">
                         <Button asChild v-slot="slotProps" v-for="tab in SchwabDividend" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="JP Morgan Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in JPMorganIncome" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="Defiance Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in DefianceIncome" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="Graniteshares YieldBOOST ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in GranitesharesYieldBOOST" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     <Fieldset legend="REX Weekly Paying Growth + Income ETFs">
                         <Button asChild v-slot="slotProps" v-for="tab in RexIncome" variant="text">
-                            <RouterLink :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
+                            <RouterLink @click="handleLinkClick"  :to="tab.route" :class="slotProps.class">{{ tab.label }}</RouterLink>
                         </Button>
                     </Fieldset>
                     

@@ -38,7 +38,10 @@ const visible = ref(false);
                 
         <div class="card flex justify-center">
             <Drawer v-model:visible="visible" position="full">
-                <AppSidebar />
+                <template #container="{ closeCallback }">
+                    <!-- AppSidebar에게 closeCallback 함수를 넘겨주고 있음 -->
+                    <AppSidebar :close-sidebar="closeCallback" /> 
+                </template>
             </Drawer>
         </div>
     </div>

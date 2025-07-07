@@ -184,15 +184,15 @@ def scrape_yieldmax_api(url_ticker, error_dir):
                 data.append(dict(zip(headers, cols)))
         return data
     except Exception as e:
-        print(f"Error scraping JEPI: {type(e).__name__} - {e}")
-        file_path = os.path.join(error_dir, 'jepi_error.png')
+        print(f"Error scraping {url_ticker.upper()}: {type(e).__name__} - {e}")
+        file_path = os.path.join(error_dir, f'{url_ticker.lower()}_error.png')
         driver.save_screenshot(file_path)
-        return []
+        return []    
     
 
 
 # 3. JPMorgan 함수
-def scrape_jepi(driver):
+def scrape_jepi(driver, error_dir):
     # (이전 코드와 동일, 안정성을 위해 대기 시간만 20초로 늘림)
     url = "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-equity-premium-income-etf-etf-shares-46641q332#/dividends"
     print(f"Scraping JEPI from {url}")
@@ -220,7 +220,8 @@ def scrape_jepi(driver):
         return data
     except Exception as e:
         print(f"Error scraping JEPI: {type(e).__name__} - {e}")
-        driver.save_screenshot('jepi_error.png')
+        file_path = os.path.join(error_dir, 'jepi_error.png')
+        driver.save_screenshot(file_path)
         return []
 
 

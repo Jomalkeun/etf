@@ -3,15 +3,23 @@
 
 
 <script setup>
-import { RouterLink } from 'vue-router'
 import { ref } from "vue";
 
 import SidebarCompany from "./SidebarCompany.vue";
 import SidebarPeriod from "./SidebarPeriod.vue";
+
+// AppTopbar로부터 close-sidebar 라는 이름의 함수를 prop으로 받습니다.
+const props = defineProps({
+  closeSidebar: {
+    type: Function,
+    required: true
+  }
+});
+
 </script>
 
 
-<template #container="{ closeCallback }">
+<template>
     <div class="card">
         <Tabs value="0">
             <TabList>
@@ -26,10 +34,10 @@ import SidebarPeriod from "./SidebarPeriod.vue";
             </TabList>
             <TabPanels>
                 <TabPanel value="0">
-                    <SidebarCompany />
+                    <SidebarCompany :on-item-click="closeSidebar" />
                 </TabPanel>
                 <TabPanel value="1">
-                    <SidebarPeriod />
+                    <SidebarPeriod :on-item-click="closeSidebar" />
                 </TabPanel>
             </TabPanels>
         </Tabs>
