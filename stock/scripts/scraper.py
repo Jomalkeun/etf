@@ -10,25 +10,81 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
+import yfinance as yf
+from datetime import datetime, timedelta
+
+def get_historical_prices(ticker_symbol, ex_date_str):
+    """
+    yfinance를 사용해 특정 티커의 배당락일 및 배당락 전일 종가를 가져옵니다.
+    :param ticker_symbol: ETF 티커 (예: 'QDTE')
+    :param ex_date_str: 배당락일 문자열 (예: '7/2/2025')
+    :return: {'before_price': '종가', 'on_price': '종가'} 형태의 딕셔너리
+    """
+    print(f"  -> Fetching historical prices for {ticker_symbol} around {ex_date_str}...")
+    try:
+        # 1. 날짜 문자열을 datetime 객체로 변환합니다.
+        ex_date = datetime.strptime(ex_date_str, '%m/%d/%Y')
+        
+        # 2. 주말이나 휴일을 고려하여, 충분한 기간의 데이터를 요청합니다.
+        # (배당락일 5일 전부터 배당락일 다음날까지)
+        start_date = ex_date - timedelta(days=5)
+        end_date = ex_date + timedelta(days=1)
+        
+        # 3. yfinance를 통해 주가 데이터 다운로드
+        ticker = yf.Ticker(ticker_symbol)
+        hist = ticker.history(start=start_date, end=end_date)
+        
+        if hist.empty:
+            print(f"     No data found for {ticker_symbol}.")
+            return {"before_price": "N/A", "on_price": "N/A"}
+            
+        # 4. 배당락일 종가 찾기
+        on_price = "N/A"
+        try:
+            # ex_date 날짜 또는 그 이전의 가장 가까운 날짜의 종가를 찾습니다.
+            on_price_val = hist.loc[:ex_date.strftime('%Y-%m-%d')].iloc[-1]['Close']
+            on_price = f"${on_price_val:.2f}"
+        except IndexError:
+            pass # 데이터가 없으면 'N/A' 유지
+
+        # 5. 배당락 전일 종가 찾기
+        before_price = "N/A"
+        try:
+            # 배당락일 바로 전 날짜(ex_date - 1일) 또는 그 이전의 가장 가까운 날짜의 종가를 찾습니다.
+            before_date_target = ex_date - timedelta(days=1)
+            before_price_val = hist.loc[:before_date_target.strftime('%Y-%m-%d')].iloc[-1]['Close']
+            before_price = f"${before_price_val:.2f}"
+        except IndexError:
+            pass # 데이터가 없으면 'N/A' 유지
+
+        return {"before_price": before_price, "on_price": on_price}
+
+    except Exception as e:
+        print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
+        return {"before_price": "N/A", "on_price": "N/A"}
+
 # --- 드라이버 설정 ---
 def setup_driver():
     options = uc.ChromeOptions()
-    # Codespaces/GitHub Actions에서는 헤드리스 모드가 필수입니다.
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
     
-    # 프로필 기능은 현재 사용하지 않으므로 주석 처리하거나 삭제해도 괜찮습니다.
-    # 하지만 그냥 두어도 다른 사이트에 영향을 주지 않으므로 유지하겠습니다.
-    profile_path = os.path.join(os.getcwd(), "chrome_profile") 
-    options.add_argument(f"--user-data-dir={profile_path}")
+    # 이제 가상 환경을 사용하므로, 프로필 경로는 더 이상 필요 없습니다.
+    # 오히려 문제를 일으킬 수 있으니, 깨끗하게 제거하는 것이 좋습니다.
+    # profile_path = os.path.join(os.getcwd(), "chrome_profile") 
+    # options.add_argument(f"--user-data-dir={profile_path}")
     
-    print("Setting up Chrome driver...")
+    print("Setting up Chrome driver for this virtual environment...")
+    
+    # --- 가장 중요한 부분 ---
+    # 깨끗한 가상 환경에게 크롬 실행 파일의 위치를 직접 알려줍니다.
     driver = uc.Chrome(
         browser_executable_path="/usr/bin/google-chrome", 
         options=options
     )
+    
     driver.set_page_load_timeout(45)
     print("Driver setup complete.")
     return driver
@@ -39,24 +95,19 @@ def setup_driver():
 def scrape_roundhill(driver, ticker, error_dir):
     """
     roundhillinvestments.com 사이트의 모든 ETF를 처리하는 범용 함수.
-    ticker 이름만 바꿔서 호출하면 됩니다.
-    'Distribution History'와 'Weekly Distributions' 제목 모두 처리합니다.
     """
     url = f"https://www.roundhillinvestments.com/etf/{ticker.lower()}/"
     print(f"Scraping {ticker.upper()} from {url}")
     try:
         driver.get(url)
-        # 테이블이 나타날 때까지 최대 20초 대기
         wait = WebDriverWait(driver, 20)
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.distri-table")))
-        time.sleep(1) # 데이터 렌더링을 위한 짧은 대기
+        time.sleep(1)
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         
-        # 제목이 'Distribution History' 또는 'Weekly Distributions'인 경우 모두 찾기
         heading = soup.find('h3', string='Distribution History')
         if not heading: heading = soup.find('h3', string='Weekly Distributions')
-        # 만약 제목을 찾지 못했다면, 에러 메시지를 남기고 빈 리스트 반환
         if not heading:
             print(f"Could not find a distribution heading for {ticker.upper()}.")
             return []
@@ -65,7 +116,6 @@ def scrape_roundhill(driver, ticker, error_dir):
         data = []
         for row in table.select('tbody tr'):
             cols = row.find_all('td')
-            # Roundhill 사이트는 항상 5개의 열을 가집니다.
             if len(cols) == 5:
                  record = {
                     '배당공시': cols[0].text.strip(),
@@ -74,13 +124,19 @@ def scrape_roundhill(driver, ticker, error_dir):
                     '배당지급일': cols[3].text.strip(),
                     '배당금': cols[4].text.strip(),
                  }
+
+                 ex_date_for_price = record['배당락'] 
+                 prices = get_historical_prices(ticker, ex_date_for_price)
+                 
+                 record['배당락전일종가'] = prices['before_price']
+                 record['배당락일종가'] = prices['on_price']
+
                  data.append(record)
         return data
     except Exception as e:
         print(f"Error scraping {ticker.upper()}: {type(e).__name__} - {e}")
-        # 저장 경로를 error_dir 안으로 설정
         file_path = os.path.join(error_dir, f'{ticker.lower()}_error.png')
-        driver.save_screenshot(file_path) # 이 부분이 올바르게 되어 있는지 확인
+        driver.save_screenshot(file_path)
         return []
     
 
