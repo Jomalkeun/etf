@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../pages/HomeView.vue'
+import StockView from '../pages/StockView.vue' // 개별 주식 정보를 보여줄 컴포넌트
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,24 +10,13 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    // 동적 경로: /stock/tsly, /stock/ymax 와 같은 모든 경로를 처리
     {
-      path: '/qdte',
-      name: 'qddte',
+      path: '/stock/:ticker', // :ticker 부분이 변수 역할을 합니다.
+      name: 'stock-detail',
       component: StockView,
-    },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue'),
-    // },
-    // {
-    //   path: '/dashboard',
-    //   name: 'dashboard',
-    //   component: () => import('../views/DashboardView.vue'),
-    // },
+      props: true // 경로의 파라미터(:ticker)를 컴포넌트의 props로 전달
+    }
   ],
 })
 

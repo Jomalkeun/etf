@@ -1,71 +1,75 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 // PrimeVue 컴포넌트 (예: DataTable)
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import ProgressSpinner from 'primevue/progressspinner'; // 로딩 인디케이터
 
-const route = useRoute(); // 현재 라우트 정보 가져오기
-const etfData = ref([]);   // 화면에 표시할 데이터
+const route = useRoute();
+const stockData = ref([]);
 const isLoading = ref(true);
+const error = ref(null);
+const ticker = ref(route.params.ticker);
 
-// 모든 ETF 데이터
-let allEtfData = null;
-
-// 데이터를 불러오고 현재 경로에 맞게 필터링하는 함수
-const fetchDataForRoute = async () => {
+// 데이터를 불러오는 비동기 함수
+const fetchData = async (tickerName) => {
   isLoading.value = true;
+  error.value = null;
+  stockData.value = [];
+  
   try {
-    // 1. 전체 데이터가 없으면 한 번만 fetch
-    if (!allEtfData) {
-      const response = await fetch('/dividends.json'); // public 폴더의 json 로드
-      if (!response.ok) throw new Error('Network response was not ok');
-      allEtfData = await response.json();
+    // 동적으로 JSON 파일 경로 생성
+    const response = await fetch(`/data/${tickerName.toLowerCase()}.json`);
+    
+    if (!response.ok) {
+      throw new Error(`데이터를 불러올 수 없습니다. (${response.status})`);
     }
     
-    // 2. 현재 경로 이름(name)을 키로 사용해 데이터 추출
-    const currentRouteName = route.name; // 'home', 'qdte' 등
-    etfData.value = allEtfData[currentRouteName] || []; // 해당 키의 데이터 할당
-
-  } catch (error) {
-    console.error("데이터를 불러오는 데 실패했습니다:", error);
-    etfData.value = []; // 에러 발생 시 빈 배열로 초기화
+    stockData.value = await response.json();
+  } catch (err) {
+    console.error(`Error fetching data for ${tickerName}:`, err);
+    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
   } finally {
     isLoading.value = false;
   }
 };
 
-// 컴포넌트가 마운트될 때 데이터 로드
-onMounted(() => {
-  fetchDataForRoute();
+// URL의 :ticker 파라미터가 변경될 때마다 데이터를 다시 불러옴
+watch(() => route.params.ticker, (newTicker) => {
+  if (newTicker) {
+    ticker.value = newTicker;
+    fetchData(newTicker);
+  }
 });
 
-// 경로가 변경될 때마다 데이터를 다시 필터링 (SPA의 핵심)
-watch(() => route.name, () => {
-  // 이미 모든 데이터가 있으므로 다시 fetch할 필요 없음
-  if (allEtfData) {
-    const currentRouteName = route.name;
-    etfData.value = allEtfData[currentRouteName] || [];
-  } else {
-    // 혹시 모를 예외 처리 (예: 사용자가 직접 url 치고 들어온 경우)
-    fetchDataForRoute();
-  }
+// 컴포넌트가 처음 마운트될 때 데이터 로드
+onMounted(() => {
+  fetchData(ticker.value);
 });
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading">
-      데이터를 불러오는 중입니다...
+  <div class="card">
+    <h2>{{ ticker.toUpperCase() }} 분배금 정보</h2>
+    
+    <div v-if="isLoading" class="p-d-flex p-jc-center p-ai-center" style="height: 200px;">
+      <ProgressSpinner />
     </div>
-    <div v-else>
-      <h1>{{ route.name.toUpperCase() }} 분배금 정보</h1>
-      <DataTable :value="etfData" responsiveLayout="scroll">
-        <Column field="name" header="종목명"></Column>
-        <Column field="dividend" header="분배금"></Column>
-        <Column field="payment_date" header="지급기준일"></Column>
-      </DataTable>
+    
+    <div v-else-if="error">
+      <p style="color: red;">{{ error }}</p>
     </div>
+    
+    <DataTable v-else :value="stockData" responsiveLayout="scroll">
+      <!-- 데이터 구조에 맞게 컬럼을 동적으로 생성하거나, 고정할 수 있습니다 -->
+      <!-- 예시: Roundhill -->
+      <Column field="Declaration" header="Declaration"></Column>
+      <Column field="Ex Date" header="Ex Date"></Column>
+      <Column field="Record Date" header="Record Date"></Column>
+      <Column field="Pay Date" header="Pay Date"></Column>
+      <Column field="Amount Paid" header="Amount Paid"></Column>
+    </DataTable>
   </div>
 </template>

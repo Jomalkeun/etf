@@ -13,138 +13,138 @@ const itemsCompany = ref([
 ]);
 
 const YieldMaxCoveredCall = ref([
-    { route: '/tsly', label: 'TSLY' },
-    { route: '/oark', label: 'OARK' },
-    { route: '/aply', label: 'APLY' },
-    { route: '/nvdy', label: 'NVDY' },
-    { route: '/amzy', label: 'AMZY' },
-    { route: '/fby', label: 'FBY' },
-    { route: '/gooy', label: 'GOOY' },
-    { route: '/cony', label: 'CONY' },
-    { route: '/nfly', label: 'NFLY' },
-    { route: '/diso', label: 'DISO' },
-    { route: '/msfo', label: 'MSFO' },
-    { route: '/xomo', label: 'XOMO' },
-    { route: '/jpmo', label: 'JPMO' },
-    { route: '/amdy', label: 'AMDY' },
-    { route: '/pypy', label: 'PYPY' },
-    { route: '/sqy', label: 'XYZY' },
-    { route: '/mrny', label: 'MRNY' },
-    { route: '/aiyy', label: 'AIYY' },
-    { route: '/msty', label: 'MSTY' },
-    { route: '/ybit', label: 'YBIT' },
-    { route: '/gdxy', label: 'GDXY' },
-    { route: '/snoy', label: 'SNOY' },
-    { route: '/abny', label: 'ABNY' },
-    { route: '/babo', label: 'BABO' },
-    { route: '/tsmy', label: 'TSMY' },
-    { route: '/smcy', label: 'SMCY' },
-    { route: '/plty', label: 'PLTY' },
-    { route: '/maro', label: 'MARO' },
-    { route: '/cvny', label: 'CVNY' },
-    { route: '/hooy', label: 'HOOY' },
-    { route: '/brkc', label: 'BRKC' }
+    { route: '/stock/tsly', label: 'TSLY' },
+    { route: '/stock/oark', label: 'OARK' },
+    { route: '/stock/aply', label: 'APLY' },
+    { route: '/stock/nvdy', label: 'NVDY' },
+    { route: '/stock/amzy', label: 'AMZY' },
+    { route: '/stock/fby', label: 'FBY' },
+    { route: '/stock/gooy', label: 'GOOY' },
+    { route: '/stock/cony', label: 'CONY' },
+    { route: '/stock/nfly', label: 'NFLY' },
+    { route: '/stock/diso', label: 'DISO' },
+    { route: '/stock/msfo', label: 'MSFO' },
+    { route: '/stock/xomo', label: 'XOMO' },
+    { route: '/stock/jpmo', label: 'JPMO' },
+    { route: '/stock/amdy', label: 'AMDY' },
+    { route: '/stock/pypy', label: 'PYPY' },
+    { route: '/stock/sqy', label: 'XYZY' },
+    { route: '/stock/mrny', label: 'MRNY' },
+    { route: '/stock/aiyy', label: 'AIYY' },
+    { route: '/stock/msty', label: 'MSTY' },
+    { route: '/stock/ybit', label: 'YBIT' },
+    { route: '/stock/gdxy', label: 'GDXY' },
+    { route: '/stock/snoy', label: 'SNOY' },
+    { route: '/stock/abny', label: 'ABNY' },
+    { route: '/stock/babo', label: 'BABO' },
+    { route: '/stock/tsmy', label: 'TSMY' },
+    { route: '/stock/smcy', label: 'SMCY' },
+    { route: '/stock/plty', label: 'PLTY' },
+    { route: '/stock/maro', label: 'MARO' },
+    { route: '/stock/cvny', label: 'CVNY' },
+    { route: '/stock/hooy', label: 'HOOY' },
+    { route: '/stock/brkc', label: 'BRKC' }
 ]);
 
 const YieldMaxFundofFunds = ref([
-    { route: '/ymax', label: 'YMAX' },
-    { route: '/ymag', label: 'YMAG' },
-    { route: '/fivy', label: 'FIVY' },
-    { route: '/feat', label: 'FEAT' }
+    { route: '/stock/ymax', label: 'YMAX' },
+    { route: '/stock/ymag', label: 'YMAG' },
+    { route: '/stock/fivy', label: 'FIVY' },
+    { route: '/stock/feat', label: 'FEAT' }
 ]);
 
 const YieldMaxUltra = ref([
-    { route: '/ulty', label: 'ULTY' }
+    { route: '/stock/ulty', label: 'ULTY' }
 ]);
 
 const YieldMaxShortOptionIncome = ref([
-    { route: '/crsh', label: 'CRSH' },
-    { route: '/fiat', label: 'FIAT' },
-    { route: '/dips', label: 'DIPS' },
-    { route: '/yqqq', label: 'YQQQ' },
-    { route: '/wntr', label: 'WNTR' }
+    { route: '/stock/crsh', label: 'CRSH' },
+    { route: '/stock/fiat', label: 'FIAT' },
+    { route: '/stock/dips', label: 'DIPS' },
+    { route: '/stock/yqqq', label: 'YQQQ' },
+    { route: '/stock/wntr', label: 'WNTR' }
 ]);
 
 const YieldMaxTarget12 = ref([
-    { route: '/bigy', label: 'BIGY' },
-    { route: '/soxy', label: 'SOXY' },
-    { route: '/rnty', label: 'RNTY' }
+    { route: '/stock/bigy', label: 'BIGY' },
+    { route: '/stock/soxy', label: 'SOXY' },
+    { route: '/stock/rnty', label: 'RNTY' }
 ]);
 
 const YieldMaxDorseyWright = ref([
-    { route: '/feat', label: 'FEAT' },
-    { route: '/fivy', label: 'FIVY' }
+    { route: '/stock/feat', label: 'FEAT' },
+    { route: '/stock/fivy', label: 'FIVY' }
 ]);
 
 const YieldMaxPortfolio = ref([
-    { route: '/lfgy', label: 'LFGY' },
-    { route: '/gpty', label: 'GPTY' },
-    { route: '/chpy', label: 'CHPY' }
+    { route: '/stock/lfgy', label: 'LFGY' },
+    { route: '/stock/gpty', label: 'GPTY' },
+    { route: '/stock/chpy', label: 'CHPY' }
 ]);
 
 const YieldMax0DTE = ref([
-    { route: '/sdty', label: 'SDTY' },
-    { route: '/qdty', label: 'QDTY' },
-    { route: '/rdty', label: 'RDTY' }
+    { route: '/stock/sdty', label: 'SDTY' },
+    { route: '/stock/qdty', label: 'QDTY' },
+    { route: '/stock/rdty', label: 'RDTY' }
 ]);
 
 const RoundhillIncome = ref([
-    { route: '/xdte', label: 'XDTE' },
-    { route: '/qdte', label: 'QDTE' },
-    { route: '/rdte', label: 'RDTE' },
-    { route: '/xpay', label: 'XPAY' },
-    { route: '/ybtc', label: 'YBTC' },
-    { route: '/yeth', label: 'YETH' },
-    { route: '/week', label: 'WEEK' },
-    { route: '/magy', label: 'MAGY' }
+    { route: '/stock/xdte', label: 'XDTE' },
+    { route: '/stock/qdte', label: 'QDTE' },
+    { route: '/stock/rdte', label: 'RDTE' },
+    { route: '/stock/xpay', label: 'XPAY' },
+    { route: '/stock/ybtc', label: 'YBTC' },
+    { route: '/stock/yeth', label: 'YETH' },
+    { route: '/stock/week', label: 'WEEK' },
+    { route: '/stock/magy', label: 'MAGY' }
 ]);
 
 const RoundhillWeeklyPay = ref([
-    { route: '/aapw', label: 'AAPW' },
-    { route: '/amzw', label: 'AMZW' },
-    { route: '/brkw', label: 'BRKW' },
-    { route: '/coiw', label: 'COIW' },
-    { route: '/hoow', label: 'HOOW' },
-    { route: '/metw', label: 'METW' },
-    { route: '/nflw', label: 'NFLW' },
-    { route: '/nvdw', label: 'NVDW' },
-    { route: '/pltw', label: 'PLTW' },
-    { route: '/tslw', label: 'TSLW' }
+    { route: '/stock/aapw', label: 'AAPW' },
+    { route: '/stock/amzw', label: 'AMZW' },
+    { route: '/stock/brkw', label: 'BRKW' },
+    { route: '/stock/coiw', label: 'COIW' },
+    { route: '/stock/hoow', label: 'HOOW' },
+    { route: '/stock/metw', label: 'METW' },
+    { route: '/stock/nflw', label: 'NFLW' },
+    { route: '/stock/nvdw', label: 'NVDW' },
+    { route: '/stock/pltw', label: 'PLTW' },
+    { route: '/stock/tslw', label: 'TSLW' }
 ]);
 
 const DefianceIncome = ref([
-    { route: '/qqqy', label: 'QQQY' },
-    { route: '/wdte', label: 'WDTE' },
-    { route: '/iwmy', label: 'IWMY' },
-    { route: '/spyt', label: 'SPYT' },
-    { route: '/qqqt', label: 'QQQT' },
-    { route: '/usoy', label: 'USOY' },
-    { route: '/gldy', label: 'GLDY' },
-    { route: '/mst', label: 'MST' },
+    { route: '/stock/qqqy', label: 'QQQY' },
+    { route: '/stock/wdte', label: 'WDTE' },
+    { route: '/stock/iwmy', label: 'IWMY' },
+    { route: '/stock/spyt', label: 'SPYT' },
+    { route: '/stock/qqqt', label: 'QQQT' },
+    { route: '/stock/usoy', label: 'USOY' },
+    { route: '/stock/gldy', label: 'GLDY' },
+    { route: '/stock/mst', label: 'MST' },
 ]);
 
 const RexIncome = ref([
-    { route: '/coii', label: 'COII' },
-    { route: '/msii', label: 'MSII' },
-    { route: '/nvii', label: 'NVII' },
-    { route: '/tsii', label: 'TSII' },
+    { route: '/stock/coii', label: 'COII' },
+    { route: '/stock/msii', label: 'MSII' },
+    { route: '/stock/nvii', label: 'NVII' },
+    { route: '/stock/tsii', label: 'TSII' },
 ]);
 const JPMorganIncome = ref([
-    { route: '/jepi', label: 'JEPI' },
-    { route: '/jepq', label: 'JEPQ' },
-    { route: '/jfli', label: 'JFLI' },
+    { route: '/stock/jepi', label: 'JEPI' },
+    { route: '/stock/jepq', label: 'JEPQ' },
+    { route: '/stock/jfli', label: 'JFLI' },
 ]);
 
 const GranitesharesYieldBOOST = ref([
-    { route: '/xbty', label: 'XBTY' },
-    { route: '/nvyy', label: 'NVYY' },
-    { route: '/tqqy', label: 'TQQY' },
-    { route: '/yspy', label: 'YSPY' },
-    { route: '/tsyy', label: 'TSYY' },
+    { route: '/stock/xbty', label: 'XBTY' },
+    { route: '/stock/nvyy', label: 'NVYY' },
+    { route: '/stock/tqqy', label: 'TQQY' },
+    { route: '/stock/yspy', label: 'YSPY' },
+    { route: '/stock/tsyy', label: 'TSYY' },
 ]);
 
 const SchwabDividend = ref([
-    { route: '/schd', label: 'SCHD' },
+    { route: '/stock/schd', label: 'SCHD' },
 ]);
 </script>
 

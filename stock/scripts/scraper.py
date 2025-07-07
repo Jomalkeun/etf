@@ -219,7 +219,11 @@ def scrape_jepi(driver):
         driver.save_screenshot('jepi_error.png')
         return []
 
-# --- 메인 실행 로직 ---
+
+
+
+
+# --- 메인 실행 로직 (파일 분리 버전) ---
 if __name__ == "__main__":
     
     # 크롤링할 티커 목록들
@@ -243,38 +247,50 @@ if __name__ == "__main__":
         "xyzy": "sqy"
     }
     
-    
-    # 모든 데이터를 저장할 최종 딕셔너리
-    all_data = {}
-    
+    # 데이터를 저장할 폴더 생성 (폴더가 없으면 만들어줌)
+    output_dir = 'public/data'
+    os.makedirs(output_dir, exist_ok=True)
+
     # --- 작업 그룹 1: Roundhill ETFs ---
     print("\n--- [GROUP 1] Starting Roundhill ETFs ---")
     driver = setup_driver()
     for ticker in roundhill_tickers:
-        all_data[ticker] = scrape_roundhill(driver, ticker)
-        time.sleep(1) # 각 요청 사이에 예의상 1초 대기
-    driver.quit() # 작업 그룹 1 종료 후 브라우저 닫기
+        data = scrape_roundhill(driver, ticker)
+        # 데이터를 가져왔을 경우에만 파일로 저장
+        if data:
+            file_path = os.path.join(output_dir, f"{ticker.lower()}.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f" => Saved data to {file_path}")
+        time.sleep(1)
+    driver.quit()
     print("--- [GROUP 1] Finished Roundhill ETFs ---")
     
     # --- 작업 그룹 2: YieldMax ETFs ---
     print("\n--- [GROUP 2] Starting YieldMax ETFs ---")
-    driver = setup_driver() # 새롭고 깨끗한 브라우저 시작
+    driver = setup_driver()
     for save_name, url_name in yieldmax_tickers_map.items():
-        all_data[save_name] = scrape_yieldmax(driver, url_name)
+        data = scrape_yieldmax(driver, url_name)
+        if data:
+            file_path = os.path.join(output_dir, f"{save_name.lower()}.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f" => Saved data to {file_path}")
         time.sleep(1)
-    driver.quit() # 작업 그룹 2 종료 후 브라우저 닫기
+    driver.quit()
     print("--- [GROUP 2] Finished YieldMax ETFs ---")
         
     # --- 작업 그룹 3: 개별 ETF들 ---
     print("\n--- [GROUP 3] Starting Individual ETFs ---")
-    driver = setup_driver() # 새롭고 깨끗한 브라우저 시작
-    all_data["jepi"] = scrape_jepi(driver)
-    driver.quit() # 작업 그룹 3 종료 후 브라우저 닫기
+    driver = setup_driver()
+    jepi_data = scrape_jepi(driver)
+    if jepi_data:
+        file_path = os.path.join(output_dir, "jepi.json")
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(jepi_data, f, ensure_ascii=False, indent=2)
+        print(f" => Saved data to {file_path}")
+    driver.quit()
     print("--- [GROUP 3] Finished Individual ETFs ---")
 
-    # 모든 데이터가 모인 후, 최종적으로 파일에 저장
-    with open('public/dividends.json', 'w', encoding='utf-8') as f:
-        json.dump(all_data, f, ensure_ascii=False, indent=2)
-
     print("\n--- ALL TASKS FINISHED ---")
-    print("All ETF data scraped and saved to public/dividends.json")
+    print("Individual JSON files created in public/data/ directory.")
