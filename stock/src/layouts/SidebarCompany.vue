@@ -68,7 +68,7 @@ const YieldMaxShortOptionIncome = ref([
 const YieldMaxTarget12 = ref([
     { route: '/bigy', label: 'BIGY' },
     { route: '/soxy', label: 'SOXY' },
-    { route: '/rnty', label: 'SOXY' }
+    { route: '/rnty', label: 'RNTY' }
 ]);
 
 const YieldMaxDorseyWright = ref([
