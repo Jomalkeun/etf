@@ -13,24 +13,32 @@ const isLoading = ref(true);
 const error = ref(null);
 const ticker = ref(route.params.ticker);
 
-// 데이터를 불러오는 비동기 함수
 const fetchData = async (tickerName) => {
   isLoading.value = true;
   error.value = null;
   stockData.value = [];
   
+  // --- 바로 이 부분입니다! ---
+  // public 폴더는 웹 서버의 루트(/) 경로가 됩니다.
+  // 따라서 경로는 항상 '/'로 시작해야 가장 안정적입니다.
+  const url = `/data/${tickerName.toLowerCase()}.json`;
+  console.log('Fetching data from URL:', url); // <--- 디버깅을 위한 로그 추가!
+
   try {
-    // 동적으로 JSON 파일 경로 생성
-    const response = await fetch(`/data/${tickerName.toLowerCase()}.json`);
+    const response = await fetch(url);
     
     if (!response.ok) {
+      // 404 Not Found 에러인지 확인
+      if (response.status === 404) {
+        throw new Error(`파일을 찾을 수 없습니다: ${url}`);
+      }
       throw new Error(`데이터를 불러올 수 없습니다. (${response.status})`);
     }
     
     stockData.value = await response.json();
   } catch (err) {
     console.error(`Error fetching data for ${tickerName}:`, err);
-    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
+    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다. (${err.message})`;
   } finally {
     isLoading.value = false;
   }
