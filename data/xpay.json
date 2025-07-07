@@ -1,0 +1,58 @@
+[
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "6/11/2025",
+    "Record Date": "6/11/2025",
+    "Pay Date": "6/12/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "5/7/2025",
+    "Record Date": "5/7/2025",
+    "Pay Date": "5/8/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "4/9/2025",
+    "Record Date": "4/9/2025",
+    "Pay Date": "4/10/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "3/12/2025",
+    "Record Date": "3/12/2025",
+    "Pay Date": "3/13/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "2/12/2025",
+    "Record Date": "2/12/2025",
+    "Pay Date": "2/13/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "1/7/2025",
+    "Ex Date": "1/8/2025",
+    "Record Date": "1/8/2025",
+    "Pay Date": "1/9/2025",
+    "Amount Paid": "$0.952845"
+  },
+  {
+    "Declaration": "11/5/2024",
+    "Ex Date": "12/11/2024",
+    "Record Date": "12/11/2024",
+    "Pay Date": "12/12/2024",
+    "Amount Paid": "$0.972333"
+  },
+  {
+    "Declaration": "11/5/2024",
+    "Ex Date": "11/6/2024",
+    "Record Date": "11/6/2024",
+    "Pay Date": "11/7/2024",
+    "Amount Paid": "$0.972333"
+  }
+]
