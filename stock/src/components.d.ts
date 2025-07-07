@@ -11,16 +11,9 @@ declare module 'vue' {
     AppConfig: typeof import('./components/AppConfig.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppTopbar: typeof import('./components/AppTopbar.vue')['default']
-    Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
-    Chart: typeof import('primevue/chart')['default']
-    Column: typeof import('primevue/column')['default']
-    DataTable: typeof import('primevue/datatable')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
-    IconField: typeof import('primevue/iconfield')['default']
-    InputIcon: typeof import('primevue/inputicon')['default']
-    InputText: typeof import('primevue/inputtext')['default']
     ProductOverviewWidget: typeof import('./components/dashboard/ProductOverviewWidget.vue')['default']
     RecentActivityWidget: typeof import('./components/dashboard/RecentActivityWidget.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -32,10 +25,8 @@ declare module 'vue' {
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
-    Tag: typeof import('primevue/tag')['default']
   }
   export interface GlobalDirectives {
-    Ripple: typeof import('primevue/ripple')['default']
     StyleClass: typeof import('primevue/styleclass')['default']
   }
 }
