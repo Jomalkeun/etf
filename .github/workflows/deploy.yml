@@ -37,7 +37,7 @@ jobs:
           cd stock
           
           # 2. 이동한 폴더에서 의존성을 설치합니다.
-          npm ci
+          npm install
           
           # 3. 이동한 폴더에서 프로젝트를 빌드합니다.
           npm run build
