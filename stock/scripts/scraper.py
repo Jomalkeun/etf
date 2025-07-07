@@ -221,42 +221,62 @@ def scrape_jepi(driver):
 
 
 
-
-
-# --- 메인 실행 로직 (파일 분리 버전) ---
+# --- 메인 실행 로직 (YieldMax 그룹화 적용 버전) ---
 if __name__ == "__main__":
     
-    # 크롤링할 티커 목록들
+    # --- 크롤링할 티커 목록들 ---
+    
     roundhill_tickers = [
         "xdte", "qdte", "rdte", "xpay", "ybtc", "yeth", "week", "magy",
         "aapw", "amzw", "brkw", "coiw", "hoow", "metw", "nflw", "nvdw",
         "pltw", "tslw"
     ]
     
-    yieldmax_tickers_map = {
-        "tsly": "tsly", "oark": "oark", "aply": "aply", "nvdy": "nvdy", "amzy": "amzy", 
-        "fby": "fby", "gooy": "gooy", "cony": "cony", "nfly": "nfly", "diso": "diso", 
-        "msfo": "msfo", "xomo": "xomo", "jpmo": "jpmo", "amdy": "amdy", "pypy": "pypy", 
-        "mrny": "mrny", "aiyy": "aiyy", "msty": "msty", "ybit": "ybit", "gdxy": "gdxy", 
-        "snoy": "snoy", "abny": "abny", "babo": "babo", "tsmy": "tsmy", "smcy": "smcy", 
-        "plty": "plty", "maro": "maro", "cvny": "cvny", "hooy": "hooy", "brkc": "brkc",
-        "ymax": "ymax", "ymag": "ymag", "fivy": "fivy", "feat": "feat", "ulty": "ulty",
-        "crsh": "crsh", "fiat": "fiat", "dips": "dips", "yqqq": "yqqq", "wntr": "wntr",
-        "bigy": "bigy", "soxy": "soxy", "rnty": "rnty", "lfgy": "lfgy", "gpty": "gpty",
-        "chpy": "chpy", "sdty": "sdty", "qdty": "qdty", "rdty": "rdty",
-        "xyzy": "sqy"
+    # 요청하신 대로, YieldMax 티커들을 5개의 관리하기 쉬운 그룹으로 나눕니다.
+    # (내용은 원하시는 대로 자유롭게 그룹 간에 이동하셔도 됩니다.)
+    
+    yieldmax_A_map = {
+        "brkc": "brkc", "crsh": "crsh", "feat": "feat", "fivy": "fivy", "gooy": "gooy", 
+        "oark": "oark", "snoy": "snoy", "tsly": "tsly", "tsmy": "tsmy", "xomo": "xomo",
+         "ybit": "ybit"
     }
     
-    # 데이터를 저장할 폴더 생성 (폴더가 없으면 만들어줌)
+    yieldmax_B_map = {
+        "babo": "babo", "dips": "dips", "fby": "fby", "gdxy": "gdxy", "jpmo": "jpmo",
+        "maro": "maro", "mrny": "mrny", "nvdy": "nvdy", "plty": "plty"
+    }
+    
+    yieldmax_C_map = {
+        "abny": "abny", "amdy": "amdy", "cony": "cony", "cvny": "cvny", "fiat": "fiat", 
+        "hooy": "hooy", "msfo": "msfo", "nfly": "nfly", "pypy": "pypy"
+    }
+    
+    yieldmax_D_map = {
+        "aiyy": "aiyy", "amzy": "amzy", "aply": "aply", "diso": "diso", "msty": "msty", 
+        "smcy": "smcy", "wntr": "wntr", "yqqq": "yqqq",  "xyzy": "sqy" # URL(sqy)과 실제 티커(xyzy)가 다른 경우
+    }
+    
+    yieldmax_Other_map = { # 이름을 Weekly 대신 Other로 했습니다. 더 명확해 보입니다.
+        "lfgy": "lfgy", "gpty": "gpty", "chpy": "chpy", 
+        "sdty": "sdty", "qdty": "qdty", "rdty": "rdty",
+        "ymax": "ymax", "ymag": "ymag", "ulty": "ulty",
+        "bigy": "bigy", "soxy": "soxy", "rnty": "rnty", 
+    }
+    
+    # 데이터를 저장할 폴더와 에러 스크린샷을 저장할 폴더 생성
     output_dir = 'public/data'
+    error_screenshot_dir = 'error_screenshots'
     os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(error_screenshot_dir, exist_ok=True)
 
+    # 모든 데이터를 저장할 최종 딕셔너리
+    all_data = {}
+    
     # --- 작업 그룹 1: Roundhill ETFs ---
     print("\n--- [GROUP 1] Starting Roundhill ETFs ---")
     driver = setup_driver()
     for ticker in roundhill_tickers:
-        data = scrape_roundhill(driver, ticker)
-        # 데이터를 가져왔을 경우에만 파일로 저장
+        data = scrape_roundhill(driver, ticker, error_screenshot_dir)
         if data:
             file_path = os.path.join(output_dir, f"{ticker.lower()}.json")
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -266,24 +286,37 @@ if __name__ == "__main__":
     driver.quit()
     print("--- [GROUP 1] Finished Roundhill ETFs ---")
     
-    # --- 작업 그룹 2: YieldMax ETFs ---
+    # --- 작업 그룹 2: YieldMax ETFs (그룹별로 처리) ---
     print("\n--- [GROUP 2] Starting YieldMax ETFs ---")
-    driver = setup_driver()
-    for save_name, url_name in yieldmax_tickers_map.items():
-        data = scrape_yieldmax(driver, url_name)
-        if data:
-            file_path = os.path.join(output_dir, f"{save_name.lower()}.json")
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f" => Saved data to {file_path}")
-        time.sleep(1)
-    driver.quit()
-    print("--- [GROUP 2] Finished YieldMax ETFs ---")
+    
+    # 처리할 YieldMax 그룹들을 리스트에 담습니다.
+    yieldmax_groups_to_run = [
+        ("Group A", yieldmax_A_map),
+        ("Group B", yieldmax_B_map),
+        ("Group C", yieldmax_C_map),
+        ("Group D", yieldmax_D_map),
+        ("Group Other", yieldmax_Other_map),
+    ]
+
+    # 각 그룹을 순회하며 크롤링 실행
+    for group_name, ticker_map in yieldmax_groups_to_run:
+        print(f"\n--- [YieldMax - {group_name}] Starting ---")
+        driver = setup_driver() # 각 YieldMax 소그룹마다 새 드라이버 시작 (안정성 향상)
+        for save_name, url_name in ticker_map.items():
+            data = scrape_yieldmax(driver, url_name, error_screenshot_dir)
+            if data:
+                file_path = os.path.join(output_dir, f"{save_name.lower()}.json")
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                print(f" => Saved data to {file_path}")
+            time.sleep(1)
+        driver.quit() # 소그룹 작업이 끝나면 드라이버 종료
+        print(f"--- [YieldMax - {group_name}] Finished ---")
         
     # --- 작업 그룹 3: 개별 ETF들 ---
     print("\n--- [GROUP 3] Starting Individual ETFs ---")
     driver = setup_driver()
-    jepi_data = scrape_jepi(driver)
+    jepi_data = scrape_jepi(driver, error_screenshot_dir)
     if jepi_data:
         file_path = os.path.join(output_dir, "jepi.json")
         with open(file_path, 'w', encoding='utf-8') as f:
