@@ -32,11 +32,11 @@ def get_historical_prices(ticker_symbol, ex_date_str):
         print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
         return {"before_price": "N/A", "on_price": "N/A"}
 
-# --- 2. yfinance 전용 범용 스크래퍼 (상세 정보 추가 버전, Update 시간 추가) ---
+# --- yfinance 전용 범용 스크래퍼 (날짜 형식 YY. MM. DD. 로 변경) ---
 def scrape_with_yfinance(ticker_symbol, company, frequency):
     """
-    yfinance API를 사용해 티커의 상세 정보와 배당 기록을 모두 가져옵니다.
-    'Update 시간' 필드를 추가합니다.
+    yfinance API를 사용해 티커의 모든 정보를 가져오고,
+    날짜 형식을 'YY. MM. DD.'로 통일하여 반환합니다.
     """
     print(f"Scraping {ticker_symbol.upper()} (Company: {company}) using yfinance API...")
     try:
@@ -44,39 +44,26 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
         ticker = yf.Ticker(ticker_symbol)
         info = ticker.info
         
-        # 2. 필요한 정보 추출 및 기본값 설정
-        fifty_two_week_low = info.get('fiftyTwoWeekLow', 0)
-        fifty_two_week_high = info.get('fiftyTwoWeekHigh', 0)
-        fifty_two_week_range = f"${fifty_two_week_low:.2f} - ${fifty_two_week_high:.2f}" if fifty_two_week_low and fifty_two_week_high else "N/A"
-        
-        volume = info.get('volume', 0)
-        avg_volume = info.get('averageVolume', 0)
-        nav = info.get('navPrice', 0)
-        yield_val = info.get('trailingAnnualDividendYield') or info.get('yield') or info.get('dividendYield') or 0
-        ytd_return = info.get('ytdReturn', 0)
-
-        # --- 바로 여기가 핵심 수정 부분입니다! ---
-        # 3. 현재 시간을 가져와 보기 좋은 형식의 문자열로 만듭니다.
-        #    (한국 시간 기준)
+        # 2. Update 시간 생성
         now_utc = datetime.utcnow()
         now_kst = now_utc + timedelta(hours=9)
         update_time_str = now_kst.strftime('%Y-%m-%d %H:%M:%S KST')
 
-        # 4. tickerInfo 객체에 'Update 시간' 필드 추가
+        # 3. tickerInfo 객체 생성
         ticker_info = {
             "티커": ticker_symbol.upper(),
             "운용사": company,
             "지급주기": frequency,
-            "Update": update_time_str, # <--- 추가된 필드!
-            "52Week": fifty_two_week_range,
-            "Volume": f"{volume:,}" if volume else "N/A",
-            "AvgVolume": f"{avg_volume:,}" if avg_volume else "N/A",
-            "NAV": f"${nav:.2f}" if nav else "N/A",
-            "Yield": f"{(yield_val * 100):.2f}%" if yield_val else "N/A",
-            "TotalReturn": f"{(ytd_return * 100):.2f}%" if ytd_return else "N/A",
+            "Update": update_time_str,
+            "52Week": f"${info.get('fiftyTwoWeekLow', 0):.2f} - ${info.get('fiftyTwoWeekHigh', 0):.2f}" if info.get('fiftyTwoWeekLow') else "N/A",
+            "Volume": f"{info.get('volume', 0):,}",
+            "AvgVolume": f"{info.get('averageVolume', 0):,}",
+            "NAV": f"${info.get('navPrice', 0):.2f}" if info.get('navPrice') else "N/A",
+            "Yield": f"{(info.get('trailingAnnualDividendYield', 0) * 100):.2f}%" if info.get('trailingAnnualDividendYield') else "N/A",
+            "TotalReturn": f"{(info.get('ytdReturn', 0) * 100):.2f}%" if info.get('ytdReturn') else "N/A",
         }
         
-        # --- 배당 기록 가져오는 부분 (이전과 동일) ---
+        # --- 배당 기록 가져오는 부분 ---
         dividends_df = ticker.dividends.to_frame()
         dividend_history = []
         if not dividends_df.empty:
@@ -86,13 +73,19 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
             
             for index, row in dividends_df.head(24).iterrows():
                 ex_date = row['ExDate'].to_pydatetime()
-                ex_date_str_mdy = ex_date.strftime('%m/%d/%Y')
+                
+                # 4. 원하는 형식의 날짜 문자열 생성
+                ex_date_str_yy_mm_dd = ex_date.strftime('%y. %m. %d') # YY. MM. DD 형식
+                ex_date_str_mdy = ex_date.strftime('%m/%d/%Y') # 주가 조회를 위한 기존 형식
+                
                 dividend_amount = row['Dividend']
                 
+                # 주가 조회는 기존의 MM/DD/YYYY 형식으로 호출
                 prices = get_historical_prices(ticker_symbol, ex_date_str_mdy)
                 
                 record = {
-                    '배당락일': ex_date_str_mdy,
+                    # 최종 저장되는 날짜는 새로운 형식으로
+                    '배당락일': ex_date_str_yy_mm_dd, 
                     '배당금': f"${dividend_amount:.4f}",
                     '배당락전일종가': prices['before_price'],
                     '배당락일종가': prices['on_price'],

@@ -10,6 +10,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
 import Chart from 'primevue/chart';
+import Panel from 'primevue/panel';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const route = useRoute();
@@ -25,42 +26,45 @@ const isPriceChartMode = ref(false);
 const chartData = ref();
 const chartOptions = ref();
 
+const parseYYMMDD = (dateStr) => {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const parts = dateStr.split('.').map(part => part.trim());
+    if (parts.length !== 3) return null;
+    return new Date(`20${parts[0]}`, parseInt(parts[1], 10) - 1, parts[2]);
+};
+
 const fetchData = async (tickerName) => {
-    isLoading.value = true;
-    error.value = null;
-    tickerInfo.value = null;
-    dividendHistory.value = [];
-    timeRangeOptions.value = [];
+  isLoading.value = true;
+  error.value = null;
+  tickerInfo.value = null;
+  dividendHistory.value = [];
+  timeRangeOptions.value = [];
 
-    const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
+  const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`File not found`);
-        const responseData = await response.json();
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`File not found`);
+    const responseData = await response.json();
 
-        tickerInfo.value = responseData.tickerInfo;
-
-        const sortedHistory = responseData.dividendHistory.sort((a, b) =>
-            new Date(b['배당락일']) - new Date(a['배당락일'])
-        );
-        dividendHistory.value = sortedHistory;
-
-        generateDynamicTimeRangeOptions();
-
-    } catch (err) {
-        error.value = `${tickerInfo.value?.티커 || tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
-    } finally {
-        isLoading.value = false;
-    }
+    tickerInfo.value = responseData.tickerInfo;
+    
+    const sortedHistory = responseData.dividendHistory.sort((a, b) => 
+        parseYYMMDD(b['배당락일']) - parseYYMMDD(a['배당락일'])
+    );
+    dividendHistory.value = sortedHistory;
+    
+    generateDynamicTimeRangeOptions();
+  } catch (err) {
+    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const generateDynamicTimeRangeOptions = () => {
-    if (dividendHistory.value.length === 0) {
-        timeRangeOptions.value = [];
-        return;
-    }
-    const oldestRecordDate = new Date(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
+    if (dividendHistory.value.length === 0) return;
+    const oldestRecordDate = parseYYMMDD(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
     const now = new Date();
     const options = [];
     const oneYearAgo = new Date(new Date().setFullYear(now.getFullYear() - 1));
@@ -70,7 +74,7 @@ const generateDynamicTimeRangeOptions = () => {
     if (oldestRecordDate < oneYearAgo) options.push('1Y');
     if (oldestRecordDate < twoYearsAgo) options.push('2Y');
     if (oldestRecordDate < threeYearsAgo) options.push('3Y');
-
+    
     options.push('Max');
     timeRangeOptions.value = options;
 
@@ -80,24 +84,18 @@ const generateDynamicTimeRangeOptions = () => {
 };
 
 const columns = computed(() => {
-    if (dividendHistory.value.length === 0) return [];
-    return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
+  if (dividendHistory.value.length === 0) return [];
+  return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
 });
 
 const chartDisplayData = computed(() => {
-    if (dividendHistory.value.length === 0) return [];
-
-    if (selectedTimeRange.value === 'Max') {
-        return [...dividendHistory.value].reverse();
-    }
-
-    const now = new Date();
-    const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
-    const cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - years));
-
-    const filteredData = dividendHistory.value.filter(item => new Date(item['배당락일']) >= cutoffDate);
-
-    return filteredData.reverse();
+  if (dividendHistory.value.length === 0) return [];
+  if (selectedTimeRange.value === 'Max') return [...dividendHistory.value].reverse();
+  const now = new Date();
+  const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
+  const cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - years));
+  const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락일']) >= cutoffDate);
+  return filteredData.reverse();
 });
 
 const setChartDataAndOptions = (data, frequency) => {
@@ -106,9 +104,11 @@ const setChartDataAndOptions = (data, frequency) => {
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
+    // --- Weekly ETF의 배당금 차트 모드 (핵심 수정) ---
     if (frequency === 'Weekly' && !isPriceChartMode.value) {
         const monthlyAggregated = data.reduce((acc, item) => {
-            const date = new Date(item['배당락일']);
+            const date = parseYYMMDD(item['배당락일']);
+            if (!date) return acc;
             const yearMonth = `${date.getFullYear().toString().slice(-2)}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item['배당금']?.replace('$', '') || 0);
             const weekOfMonth = Math.floor((date.getDate() - 1) / 7) + 1;
@@ -127,14 +127,15 @@ const setChartDataAndOptions = (data, frequency) => {
             3: 'rgba(255, 206, 86, 0.8)', 4: 'rgba(75, 192, 192, 0.8)',
             5: 'rgba(255, 159, 64, 0.8)',
         };
-
+        
+        // 1. 주차별 데이터셋 생성 (개별 라벨 포함)
         const datasets = [1, 2, 3, 4, 5].map(week => ({
             type: 'bar',
             label: `${week}주차`,
             backgroundColor: weekColors[week],
-            data: labels.map(label => monthlyAggregated[label][week] || 0),
+            data: labels.map(label => monthlyAggregated[label][week]),
             datalabels: {
-                display: (context) => context.dataset.data[context.dataIndex] > 0.0001,
+                display: context => context.dataset.data[context.dataIndex] > 0.0001,
                 formatter: (value) => `$${value.toFixed(4)}`,
                 color: '#fff',
                 font: { size: 15, weight: 'bold' },
@@ -142,18 +143,15 @@ const setChartDataAndOptions = (data, frequency) => {
                 anchor: 'center'
             }
         }));
-
-        // --- 월별 총합을 표시하기 위한 '가상' 데이터셋 수정 ---
+        
+        // 2. 총합 표시를 위한 '투명한' 데이터셋 추가
         datasets.push({
             type: 'bar',
             label: 'Total',
-            // --- 핵심 수정: 데이터 값을 모두 0으로 설정 ---
-            // 이렇게 하면 스택의 높이에 영향을 주지 않습니다.
-            data: new Array(labels.length).fill(0),
+            data: new Array(labels.length).fill(0), // 높이가 0인 막대
             backgroundColor: 'transparent',
             datalabels: {
                 display: true,
-                // formatter는 데이터 값(이제 0) 대신, context를 이용해 총합을 계산하여 표시
                 formatter: (value, context) => {
                     const monthLabel = context.chart.data.labels[context.dataIndex];
                     const total = monthlyAggregated[monthLabel]?.total || 0;
@@ -177,8 +175,9 @@ const setChartDataAndOptions = (data, frequency) => {
                     mode: 'index',
                     callbacks: {
                         label: function (context) {
+                            if (context.dataset.label === 'Total') return null; // Total 툴팁은 숨김
                             let label = context.dataset.label || '';
-                            if (context.parsed.y !== null && context.parsed.y > 0) {
+                            if (context.parsed.y > 0) {
                                 label += `: $${context.parsed.y.toFixed(4)}`;
                             } else {
                                 return null;
@@ -194,7 +193,7 @@ const setChartDataAndOptions = (data, frequency) => {
                 legend: {
                     labels: {
                         color: textColor,
-                        filter: (legendItem) => legendItem.datasetIndex < 5
+                        filter: (item) => item.datasetIndex < 5 // Total 범례 숨김
                     }
                 },
                 datalabels: { display: true }
@@ -261,20 +260,20 @@ const setChartDataAndOptions = (data, frequency) => {
 };
 
 watch(() => route.params.ticker, (newTicker) => {
-    if (newTicker) {
-        isPriceChartMode.value = false;
-        selectedTimeRange.value = '1Y';
-        fetchData(newTicker);
-    }
+  if (newTicker) {
+    isPriceChartMode.value = false;
+    selectedTimeRange.value = '1Y';
+    fetchData(newTicker);
+  }
 }, { immediate: true });
 
 watch(chartDisplayData, (newData) => {
-    if (newData && newData.length > 0 && tickerInfo.value) {
-        setChartDataAndOptions(newData, tickerInfo.value.지급주기);
-    } else {
-        chartData.value = null;
-        chartOptions.value = null;
-    }
+  if (newData && newData.length > 0 && tickerInfo.value) {
+    setChartDataAndOptions(newData, tickerInfo.value.지급주기);
+  } else {
+    chartData.value = null;
+    chartOptions.value = null;
+  }
 }, { deep: true, immediate: true });
 
 watch(isPriceChartMode, () => {
@@ -284,11 +283,13 @@ watch(isPriceChartMode, () => {
 });
 
 const home = ref({ icon: 'pi pi-home', route: '/' });
-const breadcrumbItems = computed(() => [
-    // { label: 'ETF 목록', route: '/' },  
-    { label: tickerInfo.value ? `${tickerInfo.value.운용사}` : 'Loading...' },
-    { label: tickerInfo.value ? `${tickerInfo.value.티커}` : 'Loading...' }
-]);
+const breadcrumbItems = computed(() => {
+    if (!tickerInfo.value) return [{ label: 'Loading...' }];
+    return [
+        { label: tickerInfo.value.운용사 },
+        { label: tickerInfo.value.티커 }
+    ];
+});
 </script>
 <!-- 
     "티커": "LFGY",
@@ -306,68 +307,50 @@ const breadcrumbItems = computed(() => [
 
 <template>
     <div class="card">
-        <Breadcrumb :home="home" :model="breadcrumbItems">
-            <template #item="{ item, props }">
-                <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-                    <a :href="href" v-bind="props.action" @click="navigate">
-                        <span :class="[item.icon, 'text-color']" />
-                        <span class="text-primary font-semibold">{{ item.label }}</span>
-                    </a>
-                </router-link>
-                <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-                    <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
-                </a>
-            </template>
-        </Breadcrumb>
+        <Breadcrumb :home="home" :model="breadcrumbItems" />
 
-        <!-- 로딩 중일 때는 제목을 표시하지 않음 -->
-        <div v-if="!isLoading && tickerInfo">
-            <h2 class="mt-4">{{ tickerInfo.티커 }} 분배금 정보</h2>
-            <p>운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
-        </div>
-
-        <div v-if="isLoading" class="flex justify-center items-center h-48">
+        <div v-if="isLoading" class="flex justify-center items-center h-screen">
             <ProgressSpinner />
         </div>
 
-        <div v-else-if="error">
-            <p class="text-red-500">{{ error }}</p>
+        <div v-else-if="error" class="text-center mt-8">
+            <i class="pi pi-exclamation-triangle text-5xl text-red-500"></i>
+            <p class="text-red-500 text-xl mt-4">{{ error }}</p>
         </div>
+        
+        <div v-else-if="tickerInfo && dividendHistory.length > 0">
+            <div class="mt-4">
+                <h2>{{ tickerInfo.티커 }} 분배금 정보</h2>
+                <p class="text-surface-500 dark:text-surface-400">운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
+            </div>
 
-        <template v-else-if="dividendHistory.length > 0">
             <div class="card" id="p-chart">
                 <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
             </div>
 
             <Panel>
                 <template #header>
-                    <!-- 1. 데이터 개수 선택 UI 수정 -->
-                    <!-- UI 컨트롤 영역 -->
-                    <div class="flex justify-between items-center">
-                        <!-- 토글 버튼 (Weekly ETF일 때만 보임) -->
+                    <div class="flex justify-between items-center w-full">
                         <div v-if="tickerInfo?.지급주기 === 'Weekly'">
                             <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트"
                                 onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
                         </div>
-                        <!-- 빈 공간을 채우기 위한 div (토글 버튼이 없을 때도 레이아웃 유지) -->
                         <div v-else></div>
-
-                        <!-- 시간 범위 선택 버튼 -->
                         <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
                     </div>
                 </template>
                 <template #icons>
                     <span class="text-surface-500 dark:text-surface-400">{{ tickerInfo.Update }}</span>
                 </template>
-                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable
-                    scrollHeight="50vh">
-                    <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh" :rows="10" paginator>
+                    <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
                 </DataTable>
             </Panel>
-        </template>
+        </div>
 
-        <div v-else>
-            <p>표시할 데이터가 없습니다.</p>
+        <div v-else class="text-center mt-8">
+            <i class="pi pi-inbox text-5xl text-surface-500"></i>
+            <p class="text-xl mt-4">표시할 데이터가 없습니다.</p>
         </div>
     </div>
 </template>
