@@ -11,6 +11,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 import SelectButton from 'primevue/selectbutton';
 import Chart from 'primevue/chart';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ToggleButton from 'primevue/togglebutton'; // ToggleButton 임포트
 
 const route = useRoute();
 const tickerInfo = ref(null);
@@ -21,6 +22,7 @@ const error = ref(null);
 // --- 1. UI 제어 상태: 이제 timeRangeOptions는 동적으로 생성됨 ---
 const timeRangeOptions = ref([]); // 초기에는 비어있음
 const selectedTimeRange = ref('1Y'); // 기본값은 유지
+const isPriceChartMode = ref(false); // 1. 차트 모드 상태 추가 (기본값: 배당금)
 
 const chartData = ref();
 const chartOptions = ref();
@@ -128,39 +130,62 @@ const chartDisplayData = computed(() => {
 });
 
 
-// --- 3. setChartDataAndOptions (수정 없음, 그대로 작동) ---
-// 이 함수는 이미 전달받은 데이터를 기반으로 차트를 그리므로,
-// chartDisplayData가 올바른 데이터만 넘겨주면 알아서 잘 작동합니다.
+// --- 차트 데이터/옵션 설정 함수 (최종 버전) ---
 const setChartDataAndOptions = (data, frequency) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--p-text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-    if (frequency === 'Weekly') {
+    // 3. Weekly 이면서, 주가 차트 모드일 때를 위한 새로운 로직
+    if (frequency === 'Weekly' && isPriceChartMode.value) {
+        // --- 주가 추이 선형 차트 (Weekly) ---
+        chartData.value = {
+            labels: data.map(item => item['배당락일']), // 각 배당락일이 X축
+            datasets: [
+                {
+                    type: 'line', label: '배당락전일종가',
+                    borderColor: documentStyle.getPropertyValue('--p-orange-500'),
+                    data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
+                },
+                {
+                    type: 'line', label: '배당락일종가',
+                    borderColor: documentStyle.getPropertyValue('--p-gray-500'),
+                    data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', '')))
+                }
+            ]
+        };
+        chartOptions.value = {
+            maintainAspectRatio: false, aspectRatio: 0.8,
+            plugins: { title: { display: true, text: '주가 추이' }, legend: { labels: { color: textColor } } },
+            scales: {
+                x: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
+                y: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } }
+            }
+        };
+
+    } else if (frequency === 'Weekly') {
+        // --- 월별 누적 배당금 막대 차트 (Weekly) ---
         const monthlyAggregated = data.reduce((acc, item) => {
             const date = new Date(item['배당락일']);
             const yearMonth = `${date.getFullYear().toString().slice(-2)}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item['배당금']?.replace('$', '') || 0);
             const weekOfMonth = Math.floor((date.getDate() - 1) / 7) + 1;
-
-            if (!acc[yearMonth]) {
-                acc[yearMonth] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-            }
+            if (!acc[yearMonth]) { acc[yearMonth] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }; }
             acc[yearMonth][weekOfMonth] += amount;
             return acc;
         }, {});
 
         const labels = Object.keys(monthlyAggregated);
-        const weekColors = {
+                const weekColors = {
             1: 'rgba(54, 162, 235, 0.8)', 2: 'rgba(255, 99, 132, 0.8)',
             3: 'rgba(255, 206, 86, 0.8)', 4: 'rgba(75, 192, 192, 0.8)',
             5: 'rgba(255, 159, 64, 0.8)',
         };
 
         const datasets = [1, 2, 3, 4, 5].map(week => ({
-            type: 'bar',
-            label: `${week}주차`,
+            type: 'bar', 
+            label: `${week}주차`, 
             backgroundColor: weekColors[week],
             data: labels.map(label => monthlyAggregated[label][week] || 0),
             datalabels: {
@@ -185,10 +210,9 @@ const setChartDataAndOptions = (data, frequency) => {
                 },
                 datalabels: { display: true }
             },
-            scales: {
-                x: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-                y: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } }
-            }
+            scales: { 
+              x: { stacked: true, ticks: { color: textColorSecondary } }, 
+              y: { stacked: true, ticks: { color: textColorSecondary } } }
         };
 
     } else { // Monthly 또는 다른 주기의 경우
@@ -246,14 +270,12 @@ const setChartDataAndOptions = (data, frequency) => {
 // --- 라우터 및 UI 상호작용 감지 ---
 watch(() => route.params.ticker, (newTicker) => {
   if (newTicker) {
-    // 페이지 이동 시, 기본 선택값을 '1Y'로 설정해두면
-    // generateDynamicTimeRangeOptions 함수에서 알아서 조정해줌
-    selectedTimeRange.value = '1Y'; // 페이지 이동 시 기본값으로 리셋
+    isPriceChartMode.value = false; // 다른 티커로 이동 시 항상 배당금 모드로 리셋
+    selectedTimeRange.value = '1Y';
     fetchData(newTicker);
   }
 }, { immediate: true });
 
-// chartDisplayData가 변경될 때마다 차트를 다시 그림
 watch(chartDisplayData, (newData) => {
   if (newData && newData.length > 0 && tickerInfo.value) {
     setChartDataAndOptions(newData, tickerInfo.value.지급주기);
@@ -263,9 +285,13 @@ watch(chartDisplayData, (newData) => {
   }
 }, { deep: true, immediate: true });
 
-// 사용자가 SelectButton을 클릭하면 chartDisplayData가 자동으로 재계산되고,
-// 위의 watch가 실행되어 차트가 업데이트됩니다.
-// 따라서 별도의 watch(selectedTimeRange, ...)는 필요 없습니다.
+// 4. 토글 버튼 상태가 바뀔 때도 차트를 다시 그리도록 watch 추가
+watch(isPriceChartMode, () => {
+    // chartDisplayData는 변하지 않으므로, 현재 데이터를 가지고 차트만 다시 그리면 됨
+    if (chartDisplayData.value && chartDisplayData.value.length > 0 && tickerInfo.value) {
+        setChartDataAndOptions(chartDisplayData.value, tickerInfo.value.지급주기);
+    }
+});
 
 // Breadcrumb 데이터
 const home = ref({ icon: 'pi pi-home', route: '/' });
@@ -284,18 +310,28 @@ const breadcrumbItems = computed(() => [
         <h2 class="mt-4">{{ tickerInfo.티커 }} 분배금 정보</h2>
         <p>운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
     </div>
-    
+
     <div v-if="isLoading" class="flex justify-center items-center h-48">
       <ProgressSpinner />
     </div>
-    
+
     <div v-else-if="error">
       <p class="text-red-500">{{ error }}</p>
     </div>
-    
-    <template v-else-if="dividendHistory.length > 0">
+
+      <template v-else-if="dividendHistory.length > 0">
         <!-- 1. 데이터 개수 선택 UI 수정 -->
-        <div class="my-4 flex justify-end">
+        <!-- UI 컨트롤 영역 -->
+        <div class="my-4 flex justify-between items-center">
+            <!-- 토글 버튼 (Weekly ETF일 때만 보임) -->
+            <div v-if="tickerInfo?.지급주기 === 'Weekly'">
+                <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트" 
+                              onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
+            </div>
+            <!-- 빈 공간을 채우기 위한 div (토글 버튼이 없을 때도 레이아웃 유지) -->
+            <div v-else></div>
+            
+            <!-- 시간 범위 선택 버튼 -->
             <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
         </div>
         <div class="card" id="p-chart">
