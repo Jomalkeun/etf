@@ -105,6 +105,7 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
         return None
     
 # --- 3. 메인 실행 로직 (초단순화 버전) ---
+# --- 메인 실행 로직 (증분 업데이트 적용 최종 버전) ---
 if __name__ == "__main__":
     
     # 형식: '티커': {'company': '운용사 이름', 'frequency': '지급 주기'}
@@ -213,25 +214,87 @@ if __name__ == "__main__":
         "YSPY": {"company": "GraniteShares", "frequency": "Weekly"},
         "TSYY": {"company": "GraniteShares", "frequency": "Weekly"},
     }
-
     
     output_dir = 'public/data'
     os.makedirs(output_dir, exist_ok=True)
     
-    print("\n--- Starting All Scrapes (yfinance API only) ---")
+    print("\n--- Starting All Scrapes with Incremental Update ---")
     
     for ticker, info in all_tickers_info.items():
-        # 이제 함수는 새로운 구조의 데이터를 반환합니다.
-        data = scrape_with_yfinance(ticker, info['company'], info['frequency'])
+        file_path = os.path.join(output_dir, f"{ticker.lower()}.json")
         
-        # 데이터가 정상적으로 생성되었을 때만 파일로 저장
-        if data:
-            file_path = os.path.join(output_dir, f"{ticker.lower()}.json")
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f" => Saved structured data for {ticker} to {file_path}")
+        # --- 1. 기존 데이터 로드 및 최신 배당락일 확인 ---
+        existing_data = None
+        latest_existing_date = None
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    # 기존 데이터의 dividendHistory에서 가장 최신 날짜를 찾음
+                    if existing_data and existing_data.get('dividendHistory'):
+                        history = existing_data['dividendHistory']
+                        # 'YY. MM. DD.' 형식을 datetime으로 변환하여 비교
+                        latest_existing_date = max(
+                            datetime.strptime(d['배당락일'], '%y. %m. %d.') for d in history
+                        )
+                        print(f"  -> Found existing data for {ticker}. Latest date: {latest_existing_date.strftime('%y. %m. %d.')}")
+            except (json.JSONDecodeError, KeyError, ValueError) as e:
+                print(f"  -> Warning: Could not read existing file for {ticker}. Will overwrite. Error: {e}")
+                existing_data = None
+                latest_existing_date = None
+
+        # --- 2. yfinance로 새로운 데이터 스크래핑 ---
+        # scrape_with_yfinance는 이제 {'tickerInfo': {...}, 'dividendHistory': [...]} 구조를 반환
+        new_scraped_data = scrape_with_yfinance(ticker, info['company'], info['frequency'])
+
+        if not new_scraped_data:
+            print(f"  -> No new data scraped for {ticker}. Skipping update.")
+            continue
+
+        # --- 3. 최신 데이터만 필터링 ---
+        new_dividends_to_add = []
+        if latest_existing_date:
+            for new_dividend in new_scraped_data.get('dividendHistory', []):
+                new_date = datetime.strptime(new_dividend['배당락일'], '%y. %m. %d.')
+                # 새로 가져온 데이터가 기존의 최신 날짜보다 더 새로운 경우에만 추가
+                if new_date > latest_existing_date:
+                    new_dividends_to_add.append(new_dividend)
+        else:
+            # 기존 데이터가 없으면, 스크래핑한 모든 데이터를 사용
+            new_dividends_to_add = new_scraped_data.get('dividendHistory', [])
+
+        # --- 4. 데이터 병합 및 저장 ---
+        if not new_dividends_to_add:
+            print(f"  -> No new dividend entries to add for {ticker}.")
+            # 새로운 배당 기록은 없지만, tickerInfo는 업데이트될 수 있으므로
+            # 기존 dividendHistory와 새로운 tickerInfo를 합쳐서 저장
+            if existing_data:
+                final_data_to_save = {
+                    "tickerInfo": new_scraped_data['tickerInfo'], # tickerInfo는 항상 최신으로
+                    "dividendHistory": existing_data['dividendHistory']
+                }
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(final_data_to_save, f, ensure_ascii=False, indent=2)
+                print(f" => Updated tickerInfo for {ticker} in {file_path}")
+
+        else:
+            print(f"  -> Found {len(new_dividends_to_add)} new dividend entries for {ticker}.")
+            # 기존 데이터가 있으면, 새로운 기록을 기존 기록 앞에 추가
+            if existing_data and existing_data.get('dividendHistory'):
+                combined_history = new_dividends_to_add + existing_data['dividendHistory']
+            else: # 기존 데이터가 없으면, 새로 찾은 것만 사용
+                combined_history = new_dividends_to_add
             
+            # 최종 데이터를 새로운 구조로 만듦
+            final_data_to_save = {
+                "tickerInfo": new_scraped_data['tickerInfo'], # tickerInfo는 항상 최신으로
+                "dividendHistory": combined_history
+            }
+
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(final_data_to_save, f, ensure_ascii=False, indent=2)
+            print(f" => Merged and saved data for {ticker} to {file_path}")
+
         time.sleep(1)
 
     print("\n--- ALL TASKS FINISHED ---")
-    print("All ETF data scraped and saved with the new structure.")
