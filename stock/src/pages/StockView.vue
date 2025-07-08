@@ -57,14 +57,13 @@ const fetchData = async (tickerName) => {
   }
 };
 
-// --- DataTable을 위한 동적 컬럼 생성 ---
+// DataTable 컬럼은 dividendHistory를 기준으로 생성
 const columns = computed(() => {
   if (dividendHistory.value.length === 0) return [];
-  // 이제 dividendHistory의 첫 번째 아이템을 기준으로 컬럼을 만듭니다.
   return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
 });
 
-// --- 차트 표시용 데이터 (사용자 선택에 따라 동적으로 변경) ---
+// 차트 표시용 데이터 계산 (이제 테이블과 완전히 분리됨)
 const chartDisplayData = computed(() => {
   if (dividendHistory.value.length === 0) return [];
   if (selectedCount.value === 'All') {
@@ -75,75 +74,131 @@ const chartDisplayData = computed(() => {
   return dividendHistory.value.slice(0, count).reverse();
 });
 
-// --- 차트 데이터/옵션 설정 함수 ---
-const setChartData = (data) => {
+// --- 차트 데이터/옵션 설정 함수 (대대적인 수정) ---
+const setChartData = (data, frequency) => {
     const documentStyle = getComputedStyle(document.documentElement);
-    chartData.value = {
-        labels: data.map(item => item['배당락일']), // YY.MM.DD 형식 변환은 scraper에서 미리 처리하는 것이 더 효율적
-        datasets: [
-            {
-                type: 'bar',
-                label: '배당금',
-                backgroundColor: documentStyle.getPropertyValue('--p-cyan-400'),
-                data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
-                yAxisID: 'y', order: 2,
-                datalabels: {
-                    anchor: 'end', align: 'end',
-                    formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null,
-                    color: documentStyle.getPropertyValue('--p-text-color'),
-                    font: { weight: 'bold' }
-                }
-            },
-            {
-                type: 'line',
-                label: '배당락전일종가',
-                borderColor: documentStyle.getPropertyValue('--p-orange-500'),
-                data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
-                yAxisID: 'y1', order: 1
-            },
-            {
-                type: 'line',
-                label: '배당락일종가',
-                borderColor: documentStyle.getPropertyValue('--p-gray-500'),
-                data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
-                yAxisID: 'y1', order: 1
+
+    if (frequency === 'Weekly') {
+        // --- 1. Weekly 데이터를 월별로 그룹핑하고 누적하는 로직 ---
+        const monthlyAggregated = data.reduce((acc, item) => {
+            const date = new Date(item['배당락일']);
+            const yearMonth = `${date.getFullYear().toString().slice(-2)}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+            const amount = parseFloat(item['배당금']?.replace('$', '') || 0);
+
+            if (!acc[yearMonth]) {
+                acc[yearMonth] = { total: 0, weeks: [] };
             }
-        ]
-    };
+            acc[yearMonth].total += amount;
+            acc[yearMonth].weeks.push({ date: item['배당락일'], amount: amount });
+            
+            return acc;
+        }, {});
+
+        chartData.value = {
+            labels: Object.keys(monthlyAggregated), // X축: '25-05', '25-06' 등
+            datasets: [
+                {
+                    type: 'bar',
+                    label: '월간 총 배당금',
+                    backgroundColor: documentStyle.getPropertyValue('--p-cyan-400'),
+                    data: Object.values(monthlyAggregated).map(month => month.total),
+                    yAxisID: 'y',
+                    datalabels: { // 누적 막대그래프 상단에 총합 표시
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null,
+                        color: documentStyle.getPropertyValue('--p-text-color'),
+                        font: { weight: 'bold' }
+                    }
+                }
+            ]
+        };
+    } else { // Monthly 또는 다른 주기의 경우
+        // --- 기존의 콤보 차트 로직 ---
+        chartData.value = {
+            labels: data.map(item => item['배당락일']),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: '배당금',
+                    backgroundColor: documentStyle.getPropertyValue('--p-cyan-400'),
+                    data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
+                    yAxisID: 'y', order: 2,
+                    datalabels: {
+                        anchor: 'end', align: 'end',
+                        formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null,
+                        color: documentStyle.getPropertyValue('--p-text-color'),
+                        font: { weight: 'bold' }
+                    }
+                },
+                {
+                    type: 'line',
+                    label: '배당락전일종가',
+                    borderColor: documentStyle.getPropertyValue('--p-orange-500'),
+                    data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
+                    yAxisID: 'y1', order: 1
+                },
+                {
+                    type: 'line',
+                    label: '배당락일종가',
+                    borderColor: documentStyle.getPropertyValue('--p-gray-500'),
+                    data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
+                    yAxisID: 'y1', order: 1
+                }
+            ]
+        };
+    }
 };
 
-const setChartOptions = (data) => {
+const setChartOptions = (data, frequency) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--p-text-color');
-    const prices = data.flatMap(item => [
-        parseFloat(item['배당락전일종가']?.replace('$', '')),
-        parseFloat(item['배당락일종가']?.replace('$', ''))
-    ]).filter(p => !isNaN(p));
-    if (prices.length === 0) {
-        chartOptions.value = { maintainAspectRatio: false, aspectRatio: 0.6 };
-        return;
-    }
-    const priceMin = Math.min(...prices) * 0.98;
-    const priceMax = Math.max(...prices) * 1.02;
 
-    chartOptions.value = {
+    const commonOptions = {
         maintainAspectRatio: false,
         aspectRatio: 0.6,
         plugins: {
-            datalabels: { display: context => context.dataset.type === 'bar' && context.dataset.data[context.dataIndex] > 0 },
+            datalabels: {
+                 display: context => context.dataset.data[context.dataIndex] > 0
+            },
             legend: { labels: { color: textColor } },
             tooltip: { /* 툴팁 콜백 로직 */ }
-        },
-        scales: {
-            x: { /* x축 옵션 */ },
-            y: { /* 왼쪽 y축 옵션 */ },
-            y1: {
-                type: 'linear', display: true, position: 'right',
-                min: priceMin, max: priceMax,
-                /* 나머지 y1축 옵션 */
-            }
         }
     };
+
+    if (frequency === 'Weekly') {
+        // --- 2. Stacked Bar Chart를 위한 옵션 ---
+        chartOptions.value = {
+            ...commonOptions,
+            scales: {
+                x: { stacked: true, /* ... */ },
+                y: { stacked: true, /* ... */ }
+            }
+        };
+        // Weekly는 주가 라인이 없으므로 Y1축은 필요 없음
+    } else {
+        // --- 기존 콤보 차트 옵션 (min/max 계산 포함) ---
+        const prices = data.flatMap(item => [
+            parseFloat(item['배당락전일종가']?.replace('$', '')),
+            parseFloat(item['배당락일종가']?.replace('$', ''))
+        ]).filter(p => !isNaN(p));
+        
+        const priceMin = prices.length > 0 ? Math.min(...prices) * 0.98 : 0;
+        const priceMax = prices.length > 0 ? Math.max(...prices) * 1.02 : 1;
+
+        chartOptions.value = {
+            ...commonOptions,
+            scales: {
+                x: { /* x축 옵션 */ },
+                y: { /* 왼쪽 y축 옵션 */ },
+                y1: {
+                    type: 'linear', display: true, position: 'right',
+                    min: priceMin, max: priceMax
+                    /* 나머지 y1축 옵션 */
+                }
+            }
+        };
+    }
 };
 
 // --- 라우터 및 UI 상호작용 감지 ---
@@ -155,24 +210,22 @@ watch(() => route.params.ticker, (newTicker) => {
 }, { immediate: true });
 
 watch(chartDisplayData, (newData) => {
-  if (newData && newData.length > 0) {
-    setChartData(newData);
-    setChartOptions(newData);
+  if (newData && newData.length > 0 && tickerInfo.value) {
+    // 3. 지급주기 정보를 함수에 전달
+    setChartData(newData, tickerInfo.value.지급주기);
+    setChartOptions(newData, tickerInfo.value.지급주기);
   } else {
     chartData.value = null;
     chartOptions.value = null;
   }
 }, { deep: true, immediate: true });
 
-
 // Breadcrumb 데이터
 const home = ref({ icon: 'pi pi-home', route: '/' });
 const breadcrumbItems = computed(() => [
   { label: 'ETF 목록', route: '/' },
-  // tickerInfo가 로드된 후에만 라벨을 표시하도록 함
   { label: tickerInfo.value ? `${tickerInfo.value.운용사} - ${tickerInfo.value.티커}` : 'Loading...' }
 ]);
-
 </script>
 
 <template>
