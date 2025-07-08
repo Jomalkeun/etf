@@ -18,9 +18,9 @@ const dividendHistory = ref([]); // 전체 배당 기록 (최신순)
 const isLoading = ref(true);
 const error = ref(null);
 
-// --- 1. UI 제어 상태 변경 ---
-const timeRangeOptions = ref(['1Y', '2Y', '3Y', 'Max']); // 옵션 변경
-const selectedTimeRange = ref('1Y'); // 기본값은 '1Y'
+// --- 1. UI 제어 상태: 이제 timeRangeOptions는 동적으로 생성됨 ---
+const timeRangeOptions = ref([]); // 초기에는 비어있음
+const selectedTimeRange = ref('1Y'); // 기본값은 유지
 
 const chartData = ref();
 const chartOptions = ref();
@@ -31,6 +31,7 @@ const fetchData = async (tickerName) => {
   error.value = null;
   tickerInfo.value = null;
   dividendHistory.value = [];
+  timeRangeOptions.value = []; // 데이터를 새로 불러올 때 옵션 초기화
 
   const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
 
@@ -45,12 +46,55 @@ const fetchData = async (tickerName) => {
         new Date(b['배당락일']) - new Date(a['배당락일'])
     );
     dividendHistory.value = sortedHistory;
+    
+    // --- 2. 데이터 로드 후, 동적으로 시간 범위 옵션 생성 ---
+    generateDynamicTimeRangeOptions();
 
   } catch (err) {
     error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
   } finally {
     isLoading.value = false;
   }
+};
+
+// --- 동적으로 시간 범위 옵션을 생성하는 함수 (NEW!) ---
+const generateDynamicTimeRangeOptions = () => {
+    if (dividendHistory.value.length === 0) {
+        timeRangeOptions.value = [];
+        return;
+    }
+
+    // 가장 오래된 배당 기록의 날짜를 가져옴
+    const oldestRecordDate = new Date(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
+    const now = new Date();
+    
+    const options = [];
+    const oneYearAgo = new Date(new Date().setFullYear(now.getFullYear() - 1));
+    const twoYearsAgo = new Date(new Date().setFullYear(now.getFullYear() - 2));
+    const threeYearsAgo = new Date(new Date().setFullYear(now.getFullYear() - 3));
+
+    // 운용 기간이 1년 이상이면 '1Y' 옵션 추가
+    if (oldestRecordDate < oneYearAgo) {
+        options.push('1Y');
+    }
+    // 운용 기간이 2년 이상이면 '2Y' 옵션 추가
+    if (oldestRecordDate < twoYearsAgo) {
+        options.push('2Y');
+    }
+    // 운용 기간이 3년 이상이면 '3Y' 옵션 추가
+    if (oldestRecordDate < threeYearsAgo) {
+        options.push('3Y');
+    }
+    
+    // 'Max' 옵션은 항상 추가
+    options.push('Max');
+
+    timeRangeOptions.value = options;
+
+    // 만약 기본 선택값('1Y')이 생성된 옵션에 없다면, 첫 번째 옵션으로 변경
+    if (!options.includes(selectedTimeRange.value)) {
+        selectedTimeRange.value = options[0] || 'Max';
+    }
 };
 
 // --- DataTable을 위한 동적 컬럼 생성 ---
@@ -202,6 +246,8 @@ const setChartDataAndOptions = (data, frequency) => {
 // --- 라우터 및 UI 상호작용 감지 ---
 watch(() => route.params.ticker, (newTicker) => {
   if (newTicker) {
+    // 페이지 이동 시, 기본 선택값을 '1Y'로 설정해두면
+    // generateDynamicTimeRangeOptions 함수에서 알아서 조정해줌
     selectedTimeRange.value = '1Y'; // 페이지 이동 시 기본값으로 리셋
     fetchData(newTicker);
   }

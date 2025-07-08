@@ -93,7 +93,7 @@ if __name__ == "__main__":
         "XDTE": {"company": "Roundhill", "frequency": "Weekly"},
         "QDTE": {"company": "Roundhill", "frequency": "Weekly"},
         "RDTE": {"company": "Roundhill", "frequency": "Weekly"},
-        "XPAY": {"company": "Roundhill", "frequency": "Weekly"},
+        "XPAY": {"company": "Roundhill", "frequency": "Monthly"},
         "YBTC": {"company": "Roundhill", "frequency": "Weekly"},
         "YETH": {"company": "Roundhill", "frequency": "Weekly"},
         "WEEK": {"company": "Roundhill", "frequency": "Weekly"},
