@@ -170,7 +170,8 @@ const setChartDataAndOptions = (data, frequency) => {
             maintainAspectRatio: false,
             aspectRatio: 0.8,
             plugins: {
-                title: { display: true, text: '월별 주차 배당금 누적' },
+                // title: { display: true, text: '월별 주차 배당금 누적' },
+                title: { display: false},
                 tooltip: {
                     mode: 'index',
                     callbacks: {
@@ -191,11 +192,14 @@ const setChartDataAndOptions = (data, frequency) => {
                     },
                 },
                 legend: {
-                    labels: {
-                        color: textColor,
-                        filter: (item) => item.datasetIndex < 5 // Total 범례 숨김
-                    }
+                    display: false
                 },
+                // legend: {
+                //     labels: {
+                //         color: textColor,
+                //         filter: (item) => item.datasetIndex < 5 // Total 범례 숨김
+                //     }
+                // },
                 datalabels: { display: true }
             },
             scales: {
@@ -243,7 +247,8 @@ const setChartDataAndOptions = (data, frequency) => {
             maintainAspectRatio: false,
             aspectRatio: 0.6,
             plugins: {
-                legend: { labels: { color: textColor } },
+                // legend: { labels: { color: textColor } },
+                legend: { display: false },
                 datalabels: { display: context => context.dataset.type === 'bar' }
             },
             scales: {

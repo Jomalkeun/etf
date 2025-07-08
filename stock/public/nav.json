@@ -1,0 +1,507 @@
+{
+    "nav": [
+        {
+            "name": "XDTE",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "QDTE",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "RDTE",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "XPAY",
+            "company": "Roundhill",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "YBTC",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "YETH",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "WEEK",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "MAGY",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "AAPW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "AMZW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "BRKW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "COIW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "HOOW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "METW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "NFLW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "NVDW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "PLTW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "TSLW",
+            "company": "Roundhill",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "CHPY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "GPTY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "LFGY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "QDTY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "RDTY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "SDTY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "ULTY",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "YMAG",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "YMAX",
+            "company": "YieldMax",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "TSLY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "OARK",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "BRKC",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "CRSH",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "FEAT",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "GOOY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "SNOY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "TSMY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "XOMO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "YBIT",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "A"
+        },
+        {
+            "name": "BABO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "DIPS",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "FBY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "GDXY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "JPMO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "MARO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "MRNY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "NVDY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "PLTY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "B"
+        },
+        {
+            "name": "ABNY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "AMDY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "CONY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "CVNY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "FIAT",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "HOOY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "MSFO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "NFLY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "PYPY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "C"
+        },
+        {
+            "name": "AIYY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "AMZY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "APLY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "DISO",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "MSTY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "SMCY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "WNTR",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "XYZY",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "YQQQ",
+            "company": "YieldMax",
+            "frequency": "4 Week",
+            "group": "D"
+        },
+        {
+            "name": "JEPI",
+            "company": "J.P. Morgan",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "JEPQ",
+            "company": "J.P. Morgan",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "JFLI",
+            "company": "J.P. Morgan",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "SCHD",
+            "company": "Schwab",
+            "frequency": "Quarterly"
+        },
+        {
+            "name": "QQQY",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "WDTE",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "IWMY",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "USOY",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "GLDY",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "MST",
+            "company": "Defiance",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "SPYT",
+            "company": "Defiance",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "QQQT",
+            "company": "Defiance",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "COII",
+            "company": "Rex",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "MSII",
+            "company": "Rex",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "NVII",
+            "company": "Rex",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "TSII",
+            "company": "Rex",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "XBTY",
+            "company": "GraniteShares",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "NVYY",
+            "company": "GraniteShares",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "TQQY",
+            "company": "GraniteShares",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "YSPY",
+            "company": "GraniteShares",
+            "frequency": "Weekly",
+            "group": ""
+        },
+        {
+            "name": "TSYY",
+            "company": "GraniteShares",
+            "frequency": "Weekly",
+            "group": ""
+        }
+    ]
+}

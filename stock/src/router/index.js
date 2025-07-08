@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../pages/HomeView.vue'
+import SidebarNav from '../pages/SidebarNav.vue'
 import StockView from '../pages/StockView.vue' // 개별 주식 정보를 보여줄 컴포넌트
 import NotFound from '../pages/NotFound.vue'
 
@@ -11,6 +12,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+     {
+      path: '/nav',
+      name: 'nav',
+      component: SidebarNav,
+    },
+
     // 동적 경로: /stock/tsly, /stock/ymax 와 같은 모든 경로를 처리
     {
       path: '/stock/:ticker', // :ticker 부분이 변수 역할을 합니다.
