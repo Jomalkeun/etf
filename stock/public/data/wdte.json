@@ -3,13 +3,13 @@
     "티커": "WDTE",
     "운용사": "Defiance",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:17:13 KST",
-    "52 Week Range": "$30.32 - $48.93",
+    "Update": "2025-07-08 12:12:43 KST",
+    "52Week": "$30.32 - $48.93",
     "Volume": "35,400",
-    "Avg. Volume": "19,236",
+    "AvgVolume": "19,236",
     "NAV": "$33.97",
     "Yield": "53.31%",
-    "YTD Daily Total Return": "69.34%"
+    "TotalReturn": "69.34%"
   },
   "dividendHistory": [
     {

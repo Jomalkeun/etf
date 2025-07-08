@@ -3,13 +3,13 @@
     "티커": "AMZY",
     "운용사": "YieldMax",
     "지급주기": "GroupD",
-    "Update 시간": "2025-07-08 11:16:47 KST",
-    "52 Week Range": "$13.84 - $22.21",
+    "Update": "2025-07-08 12:12:17 KST",
+    "52Week": "$13.84 - $22.21",
     "Volume": "358,164",
-    "Avg. Volume": "253,170",
+    "AvgVolume": "253,170",
     "NAV": "$16.05",
     "Yield": "51.94%",
-    "YTD Daily Total Return": "-64.69%"
+    "TotalReturn": "-64.69%"
   },
   "dividendHistory": [
     {

@@ -3,13 +3,13 @@
     "티커": "NVDY",
     "운용사": "YieldMax",
     "지급주기": "GroupB",
-    "Update 시간": "2025-07-08 11:16:25 KST",
-    "52 Week Range": "$12.47 - $29.10",
+    "Update": "2025-07-08 12:11:56 KST",
+    "52Week": "$12.47 - $29.10",
     "Volume": "2,623,373",
-    "Avg. Volume": "2,462,750",
+    "AvgVolume": "2,462,750",
     "NAV": "$16.16",
     "Yield": "112.61%",
-    "YTD Daily Total Return": "-465.02%"
+    "TotalReturn": "-465.02%"
   },
   "dividendHistory": [
     {

@@ -3,13 +3,13 @@
     "티커": "CONY",
     "운용사": "YieldMax",
     "지급주기": "GroupC",
-    "Update 시간": "2025-07-08 11:16:33 KST",
-    "52 Week Range": "$6.11 - $21.41",
+    "Update": "2025-07-08 12:12:03 KST",
+    "52Week": "$6.11 - $21.41",
     "Volume": "10,602,428",
-    "Avg. Volume": "6,678,725",
+    "AvgVolume": "6,678,725",
     "NAV": "$8.06",
     "Yield": "182.59%",
-    "YTD Daily Total Return": "-740.45%"
+    "TotalReturn": "-740.45%"
   },
   "dividendHistory": [
     {

@@ -3,13 +3,13 @@
     "티커": "MSFO",
     "운용사": "YieldMax",
     "지급주기": "GroupC",
-    "Update 시간": "2025-07-08 11:16:39 KST",
-    "52 Week Range": "$14.30 - $22.10",
+    "Update": "2025-07-08 12:12:10 KST",
+    "52Week": "$14.30 - $22.10",
     "Volume": "59,047",
-    "Avg. Volume": "61,731",
+    "AvgVolume": "61,731",
     "NAV": "$17.56",
     "Yield": "32.20%",
-    "YTD Daily Total Return": "902.65%"
+    "TotalReturn": "902.65%"
   },
   "dividendHistory": [
     {

@@ -3,13 +3,13 @@
     "티커": "APLY",
     "운용사": "YieldMax",
     "지급주기": "GroupD",
-    "Update 시간": "2025-07-08 11:16:49 KST",
-    "52 Week Range": "$11.72 - $19.04",
+    "Update": "2025-07-08 12:12:19 KST",
+    "52Week": "$11.72 - $19.04",
     "Volume": "133,948",
-    "Avg. Volume": "111,865",
+    "AvgVolume": "111,865",
     "NAV": "$12.67",
     "Yield": "35.19%",
-    "YTD Daily Total Return": "-1744.12%"
+    "TotalReturn": "-1744.12%"
   },
   "dividendHistory": [
     {

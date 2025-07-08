@@ -3,13 +3,13 @@
     "티커": "SPYT",
     "운용사": "Defiance",
     "지급주기": "Monthly",
-    "Update 시간": "2025-07-08 11:17:23 KST",
-    "52 Week Range": "$14.87 - $20.49",
+    "Update": "2025-07-08 12:12:52 KST",
+    "52Week": "$14.87 - $20.49",
     "Volume": "117,190",
-    "Avg. Volume": "75,646",
+    "AvgVolume": "75,646",
     "NAV": "$17.67",
     "Yield": "21.95%",
-    "YTD Daily Total Return": "-78.53%"
+    "TotalReturn": "-78.53%"
   },
   "dividendHistory": [
     {

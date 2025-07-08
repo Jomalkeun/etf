@@ -3,13 +3,13 @@
     "티커": "TSLY",
     "운용사": "YieldMax",
     "지급주기": "GroupA",
-    "Update 시간": "2025-07-08 11:15:55 KST",
-    "52 Week Range": "$6.90 - $18.22",
+    "Update": "2025-07-08 12:11:24 KST",
+    "52Week": "$6.90 - $18.22",
     "Volume": "43,122,284",
-    "Avg. Volume": "19,090,653",
+    "AvgVolume": "19,090,653",
     "NAV": "$8.31",
     "Yield": "116.56%",
-    "YTD Daily Total Return": "-1000.57%"
+    "TotalReturn": "-1000.57%"
   },
   "dividendHistory": [
     {

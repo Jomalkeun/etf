@@ -3,13 +3,13 @@
     "티커": "DISO",
     "운용사": "YieldMax",
     "지급주기": "GroupD",
-    "Update 시간": "2025-07-08 11:16:52 KST",
-    "52 Week Range": "$11.71 - $18.12",
+    "Update": "2025-07-08 12:12:22 KST",
+    "52Week": "$11.71 - $18.12",
     "Volume": "21,017",
-    "Avg. Volume": "17,553",
+    "AvgVolume": "17,553",
     "NAV": "$14.15",
     "Yield": "35.53%",
-    "YTD Daily Total Return": "-200.49%"
+    "TotalReturn": "-200.49%"
   },
   "dividendHistory": [
     {

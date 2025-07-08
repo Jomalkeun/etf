@@ -3,13 +3,13 @@
     "티커": "SMCY",
     "운용사": "YieldMax",
     "지급주기": "GroupD",
-    "Update 시간": "2025-07-08 11:16:56 KST",
-    "52 Week Range": "$16.16 - $59.20",
+    "Update": "2025-07-08 12:12:25 KST",
+    "52Week": "$16.16 - $59.20",
     "Volume": "1,391,505",
-    "Avg. Volume": "592,855",
+    "AvgVolume": "592,855",
     "NAV": "$19.17",
     "Yield": "N/A",
-    "YTD Daily Total Return": "1073.03%"
+    "TotalReturn": "1073.03%"
   },
   "dividendHistory": [
     {

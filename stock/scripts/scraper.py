@@ -67,13 +67,13 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
             "티커": ticker_symbol.upper(),
             "운용사": company,
             "지급주기": frequency,
-            "Update 시간": update_time_str, # <--- 추가된 필드!
-            "52 Week Range": fifty_two_week_range,
+            "Update": update_time_str, # <--- 추가된 필드!
+            "52Week": fifty_two_week_range,
             "Volume": f"{volume:,}" if volume else "N/A",
-            "Avg. Volume": f"{avg_volume:,}" if avg_volume else "N/A",
+            "AvgVolume": f"{avg_volume:,}" if avg_volume else "N/A",
             "NAV": f"${nav:.2f}" if nav else "N/A",
             "Yield": f"{(yield_val * 100):.2f}%" if yield_val else "N/A",
-            "YTD Daily Total Return": f"{(ytd_return * 100):.2f}%" if ytd_return else "N/A",
+            "TotalReturn": f"{(ytd_return * 100):.2f}%" if ytd_return else "N/A",
         }
         
         # --- 배당 기록 가져오는 부분 (이전과 동일) ---

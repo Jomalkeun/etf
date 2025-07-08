@@ -3,13 +3,13 @@
     "티커": "ULTY",
     "운용사": "YieldMax",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:15:49 KST",
-    "52 Week Range": "$5.23 - $14.40",
+    "Update": "2025-07-08 12:11:17 KST",
+    "52Week": "$5.23 - $14.40",
     "Volume": "36,877,705",
-    "Avg. Volume": "5,806,173",
+    "AvgVolume": "5,806,173",
     "NAV": "$6.23",
     "Yield": "146.46%",
-    "YTD Daily Total Return": "53.59%"
+    "TotalReturn": "53.59%"
   },
   "dividendHistory": [
     {

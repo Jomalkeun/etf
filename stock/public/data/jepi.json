@@ -3,13 +3,13 @@
     "티커": "JEPI",
     "운용사": "J.P. Morgan",
     "지급주기": "Monthly",
-    "Update 시간": "2025-07-08 11:17:02 KST",
-    "52 Week Range": "$49.94 - $60.88",
+    "Update": "2025-07-08 12:12:32 KST",
+    "52Week": "$49.94 - $60.88",
     "Volume": "5,571,493",
-    "Avg. Volume": "5,013,921",
+    "AvgVolume": "5,013,921",
     "NAV": "$56.03",
     "Yield": "8.01%",
-    "YTD Daily Total Return": "17.17%"
+    "TotalReturn": "17.17%"
   },
   "dividendHistory": [
     {

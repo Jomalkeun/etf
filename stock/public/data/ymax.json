@@ -3,13 +3,13 @@
     "티커": "YMAX",
     "운용사": "YieldMax",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:15:53 KST",
-    "52 Week Range": "$11.21 - $20.28",
+    "Update": "2025-07-08 12:11:21 KST",
+    "52Week": "$11.21 - $20.28",
     "Volume": "3,822,115",
-    "Avg. Volume": "1,858,496",
+    "AvgVolume": "1,858,496",
     "NAV": "$13.72",
     "Yield": "63.68%",
-    "YTD Daily Total Return": "149.53%"
+    "TotalReturn": "149.53%"
   },
   "dividendHistory": [
     {

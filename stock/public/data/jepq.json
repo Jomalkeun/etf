@@ -3,13 +3,13 @@
     "티커": "JEPQ",
     "운용사": "J.P. Morgan",
     "지급주기": "Monthly",
-    "Update 시간": "2025-07-08 11:17:05 KST",
-    "52 Week Range": "$44.31 - $58.54",
+    "Update": "2025-07-08 12:12:34 KST",
+    "52Week": "$44.31 - $58.54",
     "Volume": "7,215,122",
-    "Avg. Volume": "6,666,911",
+    "AvgVolume": "6,666,911",
     "NAV": "$52.79",
     "Yield": "11.28%",
-    "YTD Daily Total Return": "-288.37%"
+    "TotalReturn": "-288.37%"
   },
   "dividendHistory": [
     {

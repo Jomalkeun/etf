@@ -3,13 +3,13 @@
     "티커": "MARO",
     "운용사": "YieldMax",
     "지급주기": "GroupB",
-    "Update 시간": "2025-07-08 11:16:22 KST",
-    "52 Week Range": "$17.29 - $53.06",
+    "Update": "2025-07-08 12:11:52 KST",
+    "52Week": "$17.29 - $53.06",
     "Volume": "56,640",
-    "Avg. Volume": "118,426",
+    "AvgVolume": "118,426",
     "NAV": "$23.59",
     "Yield": "N/A",
-    "YTD Daily Total Return": "-1657.36%"
+    "TotalReturn": "-1657.36%"
   },
   "dividendHistory": [
     {

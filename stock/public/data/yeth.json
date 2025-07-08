@@ -3,13 +3,13 @@
     "티커": "YETH",
     "운용사": "Roundhill",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:15:18 KST",
-    "52 Week Range": "$21.52 - $59.50",
+    "Update": "2025-07-08 12:10:43 KST",
+    "52Week": "$21.52 - $59.50",
     "Volume": "162,918",
-    "Avg. Volume": "47,806",
+    "AvgVolume": "47,806",
     "NAV": "$24.94",
     "Yield": "N/A",
-    "YTD Daily Total Return": "-3556.95%"
+    "TotalReturn": "-3556.95%"
   },
   "dividendHistory": [
     {

@@ -3,13 +3,13 @@
     "티커": "AMDY",
     "운용사": "YieldMax",
     "지급주기": "GroupC",
-    "Update 시간": "2025-07-08 11:16:31 KST",
-    "52 Week Range": "$5.83 - $18.29",
+    "Update": "2025-07-08 12:12:01 KST",
+    "52Week": "$5.83 - $18.29",
     "Volume": "476,806",
-    "Avg. Volume": "505,826",
+    "AvgVolume": "505,826",
     "NAV": "$7.75",
     "Yield": "97.62%",
-    "YTD Daily Total Return": "-801.02%"
+    "TotalReturn": "-801.02%"
   },
   "dividendHistory": [
     {

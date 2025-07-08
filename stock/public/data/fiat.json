@@ -3,13 +3,13 @@
     "티커": "FIAT",
     "운용사": "YieldMax",
     "지급주기": "GroupC",
-    "Update 시간": "2025-07-08 11:16:36 KST",
-    "52 Week Range": "$3.20 - $23.17",
+    "Update": "2025-07-08 12:12:07 KST",
+    "52Week": "$3.20 - $23.17",
     "Volume": "465,801",
-    "Avg. Volume": "811,765",
+    "AvgVolume": "811,765",
     "NAV": "$5.09",
     "Yield": "N/A",
-    "YTD Daily Total Return": "-1116.39%"
+    "TotalReturn": "-1116.39%"
   },
   "dividendHistory": [
     {

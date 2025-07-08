@@ -3,13 +3,13 @@
     "티커": "GOOY",
     "운용사": "YieldMax",
     "지급주기": "GroupA",
-    "Update 시간": "2025-07-08 11:16:04 KST",
-    "52 Week Range": "$10.89 - $18.23",
+    "Update": "2025-07-08 12:11:32 KST",
+    "52Week": "$10.89 - $18.23",
     "Volume": "144,946",
-    "Avg. Volume": "154,605",
+    "AvgVolume": "154,605",
     "NAV": "$12.58",
     "Yield": "43.09%",
-    "YTD Daily Total Return": "-457.91%"
+    "TotalReturn": "-457.91%"
   },
   "dividendHistory": [
     {

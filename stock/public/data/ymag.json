@@ -3,13 +3,13 @@
     "티커": "YMAG",
     "운용사": "YieldMax",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:15:51 KST",
-    "52 Week Range": "$12.85 - $21.91",
+    "Update": "2025-07-08 12:11:19 KST",
+    "52Week": "$12.85 - $21.91",
     "Volume": "1,080,663",
-    "Avg. Volume": "577,093",
+    "AvgVolume": "577,093",
     "NAV": "$15.27",
     "Yield": "49.98%",
-    "YTD Daily Total Return": "-336.32%"
+    "TotalReturn": "-336.32%"
   },
   "dividendHistory": [
     {

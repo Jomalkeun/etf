@@ -3,13 +3,13 @@
     "티커": "BRKC",
     "운용사": "YieldMax",
     "지급주기": "GroupA",
-    "Update 시간": "2025-07-08 11:15:59 KST",
-    "52 Week Range": "$49.27 - $50.66",
+    "Update": "2025-07-08 12:11:28 KST",
+    "52Week": "$49.27 - $50.66",
     "Volume": "7,240",
-    "Avg. Volume": "6,814",
+    "AvgVolume": "6,814",
     "NAV": "$50.25",
     "Yield": "N/A",
-    "YTD Daily Total Return": "N/A"
+    "TotalReturn": "N/A"
   },
   "dividendHistory": []
 }

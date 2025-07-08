@@ -3,13 +3,13 @@
     "티커": "OARK",
     "운용사": "YieldMax",
     "지급주기": "GroupA",
-    "Update 시간": "2025-07-08 11:15:57 KST",
-    "52 Week Range": "$6.34 - $11.35",
+    "Update": "2025-07-08 12:11:26 KST",
+    "52Week": "$6.34 - $11.35",
     "Volume": "272,517",
-    "Avg. Volume": "114,233",
+    "AvgVolume": "114,233",
     "NAV": "$8.40",
     "Yield": "55.65%",
-    "YTD Daily Total Return": "-684.49%"
+    "TotalReturn": "-684.49%"
   },
   "dividendHistory": [
     {

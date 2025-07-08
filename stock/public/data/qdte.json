@@ -3,13 +3,13 @@
     "티커": "QDTE",
     "운용사": "Roundhill",
     "지급주기": "Weekly",
-    "Update 시간": "2025-07-08 11:15:10 KST",
-    "52 Week Range": "$29.26 - $46.57",
+    "Update": "2025-07-08 12:10:35 KST",
+    "52Week": "$29.26 - $46.57",
     "Volume": "875,838",
-    "Avg. Volume": "448,531",
+    "AvgVolume": "448,531",
     "NAV": "$34.51",
     "Yield": "44.78%",
-    "YTD Daily Total Return": "-186.25%"
+    "TotalReturn": "-186.25%"
   },
   "dividendHistory": [
     {

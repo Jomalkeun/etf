@@ -3,13 +3,13 @@
     "티커": "YBIT",
     "운용사": "YieldMax",
     "지급주기": "GroupA",
-    "Update 시간": "2025-07-08 11:16:11 KST",
-    "52 Week Range": "$9.04 - $17.30",
+    "Update": "2025-07-08 12:11:41 KST",
+    "52Week": "$9.04 - $17.30",
     "Volume": "532,868",
-    "Avg. Volume": "379,126",
+    "AvgVolume": "379,126",
     "NAV": "$10.86",
     "Yield": "99.79%",
-    "YTD Daily Total Return": "1205.99%"
+    "TotalReturn": "1205.99%"
   },
   "dividendHistory": [
     {
