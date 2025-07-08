@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { joinURL } from 'ufo'; // ufo 유틸리티를 사용하면 더 안전합니다.
 
 // PrimeVue 컴포넌트 임포트
 import DataTable from 'primevue/datatable';
@@ -33,7 +34,10 @@ const groups = ref([]); // 'group' 목록 추가
 // --- 데이터 로딩 ---
 onMounted(async () => {
     try {
-        const response = await fetch('/nav.json');
+        const url = joinURL(import.meta.env.BASE_URL, 'nav.json');
+        console.log('Fetching nav data from:', url); // 디버깅용 로그
+
+        const response = await fetch(url); 
         if (!response.ok) throw new Error('Navigation data not found');
         const data = await response.json();
 
