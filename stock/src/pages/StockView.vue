@@ -13,39 +13,43 @@ import SelectButton from 'primevue/selectbutton';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const route = useRoute();
-const allStockData = ref([]); // 1. 원본 데이터 전체는 여기에만 저장됩니다.
+
+// --- 데이터 상태 관리 ---
+const tickerInfo = ref(null);         // 티커의 고유 정보 (운용사, 지급주기 등)
+const dividendHistory = ref([]);    // 전체 배당 기록 (항상 최신순으로 정렬)
 const isLoading = ref(true);
 const error = ref(null);
-const ticker = ref(route.params.ticker);
 
-// --- 차트 옵션 ---
+// --- UI 제어 상태 ---
 const countOptions = ref(['10', '20', 'All']);
 const selectedCount = ref('10');
+
+// --- 차트 데이터 ---
 const chartData = ref();
 const chartOptions = ref();
 
-// --- DataTable을 위한 동적 컬럼 생성 로직 ---
-const columns = computed(() => {
-  // 이제 테이블은 항상 전체 데이터를 바라봅니다.
-  if (allStockData.value.length === 0) return [];
-  return Object.keys(allStockData.value[0]).map(key => ({ field: key, header: key }));
-});
-
-// --- 데이터 로딩 함수 (수정 없음) ---
+// --- 데이터 로딩 및 가공 함수 ---
 const fetchData = async (tickerName) => {
   isLoading.value = true;
   error.value = null;
-  allStockData.value = [];
-  
+  tickerInfo.value = null;
+  dividendHistory.value = [];
+
   const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
 
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`파일을 찾을 수 없습니다.`);
-    const rawData = await response.json();
+    if (!response.ok) throw new Error(`File not found`);
+    const responseData = await response.json();
 
-    const dateKey = Object.keys(rawData[0]).find(key => key.toLowerCase().includes('date'));
-    allStockData.value = rawData.sort((a, b) => new Date(b[dateKey]) - new Date(a[dateKey]));
+    tickerInfo.value = responseData.tickerInfo;
+    
+    // 배당 기록을 날짜 기준으로 내림차순 정렬 (최신 데이터가 맨 위로)
+    const sortedHistory = responseData.dividendHistory.sort((a, b) => 
+        new Date(b['배당락일']) - new Date(a['배당락일'])
+    );
+    dividendHistory.value = sortedHistory;
+
   } catch (err) {
     error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
   } finally {
@@ -53,121 +57,152 @@ const fetchData = async (tickerName) => {
   }
 };
 
-// --- 2. 차트 전용 데이터를 만드는 computed 속성 ---
-const chartDisplayData = computed(() => {
-  if (allStockData.value.length === 0) return [];
+// --- DataTable을 위한 동적 컬럼 생성 ---
+const columns = computed(() => {
+  if (dividendHistory.value.length === 0) return [];
+  // 이제 dividendHistory의 첫 번째 아이템을 기준으로 컬럼을 만듭니다.
+  return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
+});
 
+// --- 차트 표시용 데이터 (사용자 선택에 따라 동적으로 변경) ---
+const chartDisplayData = computed(() => {
+  if (dividendHistory.value.length === 0) return [];
   if (selectedCount.value === 'All') {
-    return [...allStockData.value]; // 전체 데이터 사용
+    return [...dividendHistory.value].reverse(); // 차트는 시간 순(과거->현재)이므로 뒤집음
   }
-  // 선택된 개수만큼 최신 데이터 자르기
-  return allStockData.value.slice(0, parseInt(selectedCount.value, 10));
+  const count = parseInt(selectedCount.value, 10);
+  // 최신 데이터 N개를 잘라낸 후, 시간 순으로 뒤집음
+  return dividendHistory.value.slice(0, count).reverse();
 });
 
 // --- 차트 데이터/옵션 설정 함수 ---
 const setChartData = (data) => {
-    const chartReadyData = [...data].reverse(); // 차트 순서를 위해 뒤집음 (과거 -> 현재)
     const documentStyle = getComputedStyle(document.documentElement);
-
     chartData.value = {
-        labels: chartReadyData.map(item => item['배당락'] || item['Ex Date']),
+        labels: data.map(item => item['배당락일']), // YY.MM.DD 형식 변환은 scraper에서 미리 처리하는 것이 더 효율적
         datasets: [
             {
                 type: 'bar',
                 label: '배당금',
                 backgroundColor: documentStyle.getPropertyValue('--p-cyan-400'),
-                data: chartReadyData.map(item => parseFloat((item['배당금'] || item['Amount Paid'])?.replace('$', '') || 0)),
-                yAxisID: 'y',
-                order: 2, // 막대 차트를 뒤로 보냄
+                data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
+                yAxisID: 'y', order: 2,
                 datalabels: {
-                    anchor: 'end',
-                    align: 'end',
+                    anchor: 'end', align: 'end',
                     formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null,
-                    color: documentStyle.getPropertyValue('--p-text-color')
+                    color: documentStyle.getPropertyValue('--p-text-color'),
+                    font: { weight: 'bold' }
                 }
             },
-            // --- 3. 누락되었던 선형 차트 데이터셋 복원 ---
             {
                 type: 'line',
                 label: '배당락전일종가',
                 borderColor: documentStyle.getPropertyValue('--p-orange-500'),
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                data: chartReadyData.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
-                yAxisID: 'y1', // 오른쪽 Y축 사용
-                order: 1 // 선형 차트를 앞으로 보냄
+                data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
+                yAxisID: 'y1', order: 1
             },
             {
                 type: 'line',
                 label: '배당락일종가',
                 borderColor: documentStyle.getPropertyValue('--p-gray-500'),
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                data: chartReadyData.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
-                yAxisID: 'y1', // 오른쪽 Y축 사용
-                order: 1
+                data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
+                yAxisID: 'y1', order: 1
             }
         ]
     };
 };
 
 const setChartOptions = (data) => {
-    // ... (이전과 동일, min/max 계산 로직) ...
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--p-text-color');
+    const prices = data.flatMap(item => [
+        parseFloat(item['배당락전일종가']?.replace('$', '')),
+        parseFloat(item['배당락일종가']?.replace('$', ''))
+    ]).filter(p => !isNaN(p));
+    if (prices.length === 0) {
+        chartOptions.value = { maintainAspectRatio: false, aspectRatio: 0.6 };
+        return;
+    }
+    const priceMin = Math.min(...prices) * 0.98;
+    const priceMax = Math.max(...prices) * 1.02;
+
+    chartOptions.value = {
+        maintainAspectRatio: false,
+        aspectRatio: 0.6,
+        plugins: {
+            datalabels: { display: context => context.dataset.type === 'bar' && context.dataset.data[context.dataIndex] > 0 },
+            legend: { labels: { color: textColor } },
+            tooltip: { /* 툴팁 콜백 로직 */ }
+        },
+        scales: {
+            x: { /* x축 옵션 */ },
+            y: { /* 왼쪽 y축 옵션 */ },
+            y1: {
+                type: 'linear', display: true, position: 'right',
+                min: priceMin, max: priceMax,
+                /* 나머지 y1축 옵션 */
+            }
+        }
+    };
 };
 
-// --- 라우터 및 사용자 선택 감지 로직 ---
+// --- 라우터 및 UI 상호작용 감지 ---
 watch(() => route.params.ticker, (newTicker) => {
   if (newTicker) {
-    selectedCount.value = '10';
-    ticker.value = newTicker;
+    selectedCount.value = '10'; // 페이지 이동 시 기본값으로 리셋
     fetchData(newTicker);
   }
 }, { immediate: true });
 
-// chartDisplayData (즉, 사용자의 선택)가 변경될 때마다 차트를 다시 그림
 watch(chartDisplayData, (newData) => {
-  if (newData.length > 0) {
+  if (newData && newData.length > 0) {
     setChartData(newData);
-    // setChartOptions(newData); // 옵션도 다시 계산하려면 이 주석을 해제
+    setChartOptions(newData);
+  } else {
+    chartData.value = null;
+    chartOptions.value = null;
   }
-}, { deep: true }); // deep: true 옵션으로 배열 내부의 변경도 감지
+}, { deep: true, immediate: true });
 
-// Breadcrumb 로직 (수정 없음)
+
+// Breadcrumb 데이터
 const home = ref({ icon: 'pi pi-home', route: '/' });
 const breadcrumbItems = computed(() => [
   { label: 'ETF 목록', route: '/' },
-  { label: ticker.value.toUpperCase() }
+  // tickerInfo가 로드된 후에만 라벨을 표시하도록 함
+  { label: tickerInfo.value ? `${tickerInfo.value.운용사} - ${tickerInfo.value.티커}` : 'Loading...' }
 ]);
+
 </script>
 
 <template>
   <div class="card">
     <Breadcrumb :home="home" :model="breadcrumbItems" />
 
-    <h2 class="mt-4">{{ ticker.toUpperCase() }} 분배금 정보</h2>
+    <!-- 로딩 중일 때는 제목을 표시하지 않음 -->
+    <div v-if="!isLoading && tickerInfo">
+        <h2 class="mt-4">{{ tickerInfo.티커 }} 분배금 정보</h2>
+        <p>운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
+    </div>
     
-    <div class="my-4 flex justify-end">
-        <SelectButton v-model="selectedCount" :options="countOptions" aria-labelledby="basic" />
-    </div>
-
-    <div class="card" id="p-chart" v-if="!isLoading && allStockData.length > 0">
-        <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
-    </div>
-
     <div v-if="isLoading" class="flex justify-center items-center h-48">
       <ProgressSpinner />
     </div>
+    
     <div v-else-if="error">
       <p class="text-red-500">{{ error }}</p>
     </div>
     
-    <!-- 1. DataTable은 항상 원본 데이터 전체(allStockData)를 바라봅니다. -->
-    <template v-else-if="allStockData.length > 0">
-      <DataTable :value="allStockData" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh">
-        <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
-      </DataTable>
+    <template v-else-if="dividendHistory.length > 0">
+        <div class="my-4 flex justify-end">
+            <SelectButton v-model="selectedCount" :options="countOptions" aria-labelledby="basic" />
+        </div>
+        <div class="card" id="p-chart">
+            <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
+        </div>
+        <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh">
+            <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+        </DataTable>
     </template>
     
     <div v-else>
