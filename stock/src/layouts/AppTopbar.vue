@@ -37,11 +37,8 @@ const visible = ref(false);
                 rounded @click="visible = true" />
                 
         <div class="card flex justify-center">
-            <Drawer v-model:visible="visible" position="full">
-                <template #container="{ closeCallback }">
-                    <!-- AppSidebar에게 closeCallback 함수를 넘겨주고 있음 -->
-                    <AppSidebar :close-sidebar="closeCallback" /> 
-                </template>
+            <Drawer v-model:visible="visible" position="right">
+                <AppSidebar /> 
             </Drawer>
         </div>
     </div>

@@ -12,12 +12,6 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-     {
-      path: '/nav',
-      name: 'nav',
-      component: SidebarNav,
-    },
-
     // 동적 경로: /stock/tsly, /stock/ymax 와 같은 모든 경로를 처리
     {
       path: '/stock/:ticker', // :ticker 부분이 변수 역할을 합니다.
