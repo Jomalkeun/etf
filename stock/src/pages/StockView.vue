@@ -34,32 +34,32 @@ const parseYYMMDD = (dateStr) => {
 };
 
 const fetchData = async (tickerName) => {
-  isLoading.value = true;
-  error.value = null;
-  tickerInfo.value = null;
-  dividendHistory.value = [];
-  timeRangeOptions.value = [];
+    isLoading.value = true;
+    error.value = null;
+    tickerInfo.value = null;
+    dividendHistory.value = [];
+    timeRangeOptions.value = [];
 
-  const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
+    const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`File not found`);
-    const responseData = await response.json();
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`File not found`);
+        const responseData = await response.json();
 
-    tickerInfo.value = responseData.tickerInfo;
-    
-    const sortedHistory = responseData.dividendHistory.sort((a, b) => 
-        parseYYMMDD(b['배당락일']) - parseYYMMDD(a['배당락일'])
-    );
-    dividendHistory.value = sortedHistory;
-    
-    generateDynamicTimeRangeOptions();
-  } catch (err) {
-    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
-  } finally {
-    isLoading.value = false;
-  }
+        tickerInfo.value = responseData.tickerInfo;
+
+        const sortedHistory = responseData.dividendHistory.sort((a, b) =>
+            parseYYMMDD(b['배당락일']) - parseYYMMDD(a['배당락일'])
+        );
+        dividendHistory.value = sortedHistory;
+
+        generateDynamicTimeRangeOptions();
+    } catch (err) {
+        error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 const generateDynamicTimeRangeOptions = () => {
@@ -74,7 +74,7 @@ const generateDynamicTimeRangeOptions = () => {
     if (oldestRecordDate < oneYearAgo) options.push('1Y');
     if (oldestRecordDate < twoYearsAgo) options.push('2Y');
     if (oldestRecordDate < threeYearsAgo) options.push('3Y');
-    
+
     options.push('Max');
     timeRangeOptions.value = options;
 
@@ -84,18 +84,18 @@ const generateDynamicTimeRangeOptions = () => {
 };
 
 const columns = computed(() => {
-  if (dividendHistory.value.length === 0) return [];
-  return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
+    if (dividendHistory.value.length === 0) return [];
+    return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
 });
 
 const chartDisplayData = computed(() => {
-  if (dividendHistory.value.length === 0) return [];
-  if (selectedTimeRange.value === 'Max') return [...dividendHistory.value].reverse();
-  const now = new Date();
-  const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
-  const cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - years));
-  const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락일']) >= cutoffDate);
-  return filteredData.reverse();
+    if (dividendHistory.value.length === 0) return [];
+    if (selectedTimeRange.value === 'Max') return [...dividendHistory.value].reverse();
+    const now = new Date();
+    const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
+    const cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - years));
+    const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락일']) >= cutoffDate);
+    return filteredData.reverse();
 });
 
 const setChartDataAndOptions = (data, frequency) => {
@@ -127,7 +127,7 @@ const setChartDataAndOptions = (data, frequency) => {
             3: 'rgba(255, 206, 86, 0.8)', 4: 'rgba(75, 192, 192, 0.8)',
             5: 'rgba(255, 159, 64, 0.8)',
         };
-        
+
         // 1. 주차별 데이터셋 생성 (개별 라벨 포함)
         const datasets = [1, 2, 3, 4, 5].map(week => ({
             type: 'bar',
@@ -143,7 +143,7 @@ const setChartDataAndOptions = (data, frequency) => {
                 anchor: 'center'
             }
         }));
-        
+
         // 2. 총합 표시를 위한 '투명한' 데이터셋 추가
         datasets.push({
             type: 'bar',
@@ -171,7 +171,7 @@ const setChartDataAndOptions = (data, frequency) => {
             aspectRatio: 0.8,
             plugins: {
                 // title: { display: true, text: '월별 주차 배당금 누적' },
-                title: { display: false},
+                title: { display: false },
                 tooltip: {
                     mode: 'index',
                     callbacks: {
@@ -247,8 +247,8 @@ const setChartDataAndOptions = (data, frequency) => {
             maintainAspectRatio: false,
             aspectRatio: 0.6,
             plugins: {
-                // legend: { labels: { color: textColor } },
-                legend: { display: false },
+                legend: { labels: { color: textColor } },
+                // legend: { display: false },
                 datalabels: { display: context => context.dataset.type === 'bar' }
             },
             scales: {
@@ -265,20 +265,20 @@ const setChartDataAndOptions = (data, frequency) => {
 };
 
 watch(() => route.params.ticker, (newTicker) => {
-  if (newTicker) {
-    isPriceChartMode.value = false;
-    selectedTimeRange.value = '1Y';
-    fetchData(newTicker);
-  }
+    if (newTicker) {
+        isPriceChartMode.value = false;
+        selectedTimeRange.value = '1Y';
+        fetchData(newTicker);
+    }
 }, { immediate: true });
 
 watch(chartDisplayData, (newData) => {
-  if (newData && newData.length > 0 && tickerInfo.value) {
-    setChartDataAndOptions(newData, tickerInfo.value.지급주기);
-  } else {
-    chartData.value = null;
-    chartOptions.value = null;
-  }
+    if (newData && newData.length > 0 && tickerInfo.value) {
+        setChartDataAndOptions(newData, tickerInfo.value.지급주기);
+    } else {
+        chartData.value = null;
+        chartOptions.value = null;
+    }
 }, { deep: true, immediate: true });
 
 watch(isPriceChartMode, () => {
@@ -287,13 +287,48 @@ watch(isPriceChartMode, () => {
     }
 });
 
-const home = ref({ icon: 'pi pi-home', route: '/' });
-const breadcrumbItems = computed(() => {
-    if (!tickerInfo.value) return [{ label: 'Loading...' }];
+// Breadcrumb 데이터 (수정 없음, 참고용)
+// const home = ref({ icon: 'pi pi-home', route: '/' });
+// const breadcrumbItems = computed(() => {
+//     if (!tickerInfo.value) return [{ label: 'Loading...' }];
+//     return [
+//         { label: tickerInfo.value.운용사 },
+//         { label: tickerInfo.value.티커 }
+//     ];
+// });
+
+
+// --- stats 배열을 computed 속성으로 변경 (핵심 수정) ---
+const stats = computed(() => {
+  // tickerInfo 데이터가 아직 없으면, 빈 배열이나 기본값 배열을 반환
+  if (!tickerInfo.value) {
     return [
-        { label: tickerInfo.value.운용사 },
-        { label: tickerInfo.value.티커 }
+        { title: "시가총액", value: "..." },
+        { title: "52주", value: "..." },
+        { title: "NAV", value: "..." },
+        { title: "Total Return", value: "..." },
     ];
+  }
+
+  // tickerInfo 데이터가 준비되면, 실제 값을 사용하여 배열 생성
+  return [
+    {
+        title: "시가총액",
+        value: tickerInfo.value.Volume // 이제 tickerInfo.value는 실제 객체입니다.
+    },
+    {
+        title: "52주",
+        value: tickerInfo.value['52Week'] // 키에 특수문자가 없으므로 .52Week도 가능
+    },
+    {
+        title: "NAV",
+        value: tickerInfo.value.NAV
+    },
+    {
+        title: "Total Return",
+        value: tickerInfo.value.TotalReturn
+    },
+  ];
 });
 </script>
 <!-- 
@@ -312,8 +347,6 @@ const breadcrumbItems = computed(() => {
 
 <template>
     <div class="card">
-        <Breadcrumb :home="home" :model="breadcrumbItems" />
-
         <div v-if="isLoading" class="flex justify-center items-center h-screen">
             <ProgressSpinner />
         </div>
@@ -322,11 +355,27 @@ const breadcrumbItems = computed(() => {
             <i class="pi pi-exclamation-triangle text-5xl text-red-500"></i>
             <p class="text-red-500 text-xl mt-4">{{ error }}</p>
         </div>
-        
-        <div v-else-if="tickerInfo && dividendHistory.length > 0">
-            <div class="mt-4">
-                <h2>{{ tickerInfo.티커 }} 분배금 정보</h2>
-                <p class="text-surface-500 dark:text-surface-400">운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
+
+        <div v-else-if="tickerInfo && dividendHistory.length > 0" class="flex flex-column gap-5">
+
+            <div id="tickerInfo">
+                <div class="tickerInfo__header">
+                    <div class="tickerInfo__brand"> {{ tickerInfo.운용사 }} &middot; {{ tickerInfo.지급주기 }}</div>
+                    <h2 class="tickerInfo__title">{{ tickerInfo.티커 }}</h2>
+                </div>
+                <div class="tickerInfo__status">
+                    <div class="stats">
+                        <div v-for="(stat, index) in stats" :key="index" class="layout-card">
+                            
+                            <div class="stats-content">
+                                <div class="stats-value">{{ stat.value }}</div>
+                            </div>
+                            <div class="stats-header">
+                                <span class="stats-title">{{ stat.title }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="card" id="p-chart">
@@ -335,7 +384,7 @@ const breadcrumbItems = computed(() => {
 
             <Panel>
                 <template #header>
-                    <div class="flex justify-between items-center w-full">
+                    <div class="flex justify-between items-center gap-2">
                         <div v-if="tickerInfo?.지급주기 === 'Weekly'">
                             <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트"
                                 onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
@@ -347,8 +396,10 @@ const breadcrumbItems = computed(() => {
                 <template #icons>
                     <span class="text-surface-500 dark:text-surface-400">{{ tickerInfo.Update }}</span>
                 </template>
-                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh" :rows="10" paginator>
-                    <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
+                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh"
+                    :rows="10" paginator>
+                    <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable>
+                    </Column>
                 </DataTable>
             </Panel>
         </div>

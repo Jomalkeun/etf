@@ -78,9 +78,10 @@ const getCompanySeverity = (company) => {
 
 const getFrequencySeverity = (frequency) => {
     switch (frequency) {
-        case 'Weekly': return 'secondary';
-        case 'Monthly': return 'secondary';
-        case 'Quarterly': return 'secondary';
+        case '주배당': return 'secondary';
+        case '월배당': return 'secondary';
+        case '분기': return 'secondary';
+        case '매 4주': return 'secondary';
         default: return 'secondary';
     }
 };
