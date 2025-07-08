@@ -29,34 +29,34 @@ const chartOptions = ref();
 
 // --- 데이터 로딩 및 가공 함수 ---
 const fetchData = async (tickerName) => {
-  isLoading.value = true;
-  error.value = null;
-  tickerInfo.value = null;
-  dividendHistory.value = [];
-  timeRangeOptions.value = []; // 데이터를 새로 불러올 때 옵션 초기화
+    isLoading.value = true;
+    error.value = null;
+    tickerInfo.value = null;
+    dividendHistory.value = [];
+    timeRangeOptions.value = []; // 데이터를 새로 불러올 때 옵션 초기화
 
-  const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
+    const url = joinURL(import.meta.env.BASE_URL, `data/${tickerName.toLowerCase()}.json`);
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`File not found`);
-    const responseData = await response.json();
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`File not found`);
+        const responseData = await response.json();
 
-    tickerInfo.value = responseData.tickerInfo;
-    
-    const sortedHistory = responseData.dividendHistory.sort((a, b) => 
-        new Date(b['배당락일']) - new Date(a['배당락일'])
-    );
-    dividendHistory.value = sortedHistory;
-    
-    // --- 2. 데이터 로드 후, 동적으로 시간 범위 옵션 생성 ---
-    generateDynamicTimeRangeOptions();
+        tickerInfo.value = responseData.tickerInfo;
 
-  } catch (err) {
-    error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
-  } finally {
-    isLoading.value = false;
-  }
+        const sortedHistory = responseData.dividendHistory.sort((a, b) =>
+            new Date(b['배당락일']) - new Date(a['배당락일'])
+        );
+        dividendHistory.value = sortedHistory;
+
+        // --- 2. 데이터 로드 후, 동적으로 시간 범위 옵션 생성 ---
+        generateDynamicTimeRangeOptions();
+
+    } catch (err) {
+        error.value = `${tickerName.toUpperCase()}의 분배금 정보를 찾을 수 없습니다.`;
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 // --- 동적으로 시간 범위 옵션을 생성하는 함수 (NEW!) ---
@@ -69,7 +69,7 @@ const generateDynamicTimeRangeOptions = () => {
     // 가장 오래된 배당 기록의 날짜를 가져옴
     const oldestRecordDate = new Date(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
     const now = new Date();
-    
+
     const options = [];
     const oneYearAgo = new Date(new Date().setFullYear(now.getFullYear() - 1));
     const twoYearsAgo = new Date(new Date().setFullYear(now.getFullYear() - 2));
@@ -87,7 +87,7 @@ const generateDynamicTimeRangeOptions = () => {
     if (oldestRecordDate < threeYearsAgo) {
         options.push('3Y');
     }
-    
+
     // 'Max' 옵션은 항상 추가
     options.push('Max');
 
@@ -101,32 +101,32 @@ const generateDynamicTimeRangeOptions = () => {
 
 // --- DataTable을 위한 동적 컬럼 생성 ---
 const columns = computed(() => {
-  if (dividendHistory.value.length === 0) return [];
-  return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
+    if (dividendHistory.value.length === 0) return [];
+    return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
 });
 
 // --- 2. 차트 전용 데이터를 '시간 범위' 기준으로 필터링 (핵심 수정) ---
 const chartDisplayData = computed(() => {
-  if (dividendHistory.value.length === 0) return [];
-  
-  if (selectedTimeRange.value === 'Max') {
-    return [...dividendHistory.value].reverse(); // 전체 데이터 (시간 순으로 뒤집음)
-  }
+    if (dividendHistory.value.length === 0) return [];
 
-  // 기준 날짜 계산
-  const now = new Date();
-  const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
-  // 오늘로부터 N년 전의 날짜를 계산
-  const cutoffDate = new Date(now.setFullYear(now.getFullYear() - years));
+    if (selectedTimeRange.value === 'Max') {
+        return [...dividendHistory.value].reverse(); // 전체 데이터 (시간 순으로 뒤집음)
+    }
 
-  // 원본 데이터(최신순)에서 기준 날짜 이후의 데이터만 필터링
-  const filteredData = dividendHistory.value.filter(item => {
-    const itemDate = new Date(item['배당락일']);
-    return itemDate >= cutoffDate;
-  });
-  
-  // 차트 표시를 위해 시간 순으로 뒤집음 (과거 -> 현재)
-  return filteredData.reverse();
+    // 기준 날짜 계산
+    const now = new Date();
+    const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
+    // 오늘로부터 N년 전의 날짜를 계산
+    const cutoffDate = new Date(now.setFullYear(now.getFullYear() - years));
+
+    // 원본 데이터(최신순)에서 기준 날짜 이후의 데이터만 필터링
+    const filteredData = dividendHistory.value.filter(item => {
+        const itemDate = new Date(item['배당락일']);
+        return itemDate >= cutoffDate;
+    });
+
+    // 차트 표시를 위해 시간 순으로 뒤집음 (과거 -> 현재)
+    return filteredData.reverse();
 });
 
 
@@ -177,23 +177,23 @@ const setChartDataAndOptions = (data, frequency) => {
         }, {});
 
         const labels = Object.keys(monthlyAggregated);
-                const weekColors = {
+        const weekColors = {
             1: 'rgba(54, 162, 235, 0.8)', 2: 'rgba(255, 99, 132, 0.8)',
             3: 'rgba(255, 206, 86, 0.8)', 4: 'rgba(75, 192, 192, 0.8)',
             5: 'rgba(255, 159, 64, 0.8)',
         };
 
         const datasets = [1, 2, 3, 4, 5].map(week => ({
-            type: 'bar', 
-            label: `${week}주차`, 
+            type: 'bar',
+            label: `${week}주차`,
             backgroundColor: weekColors[week],
             data: labels.map(label => monthlyAggregated[label][week] || 0),
             datalabels: {
                 formatter: (value) => value > 0 ? `$${value.toFixed(4)}` : null,
-                color: '#fff', font: { size: 10 }
+                color: '#fff', font: { size: 16 }
             }
         }));
-        
+
         chartData.value = { labels, datasets };
         chartOptions.value = {
             maintainAspectRatio: false, aspectRatio: 0.8,
@@ -210,9 +210,10 @@ const setChartDataAndOptions = (data, frequency) => {
                 },
                 datalabels: { display: true }
             },
-            scales: { 
-              x: { stacked: true, ticks: { color: textColorSecondary } }, 
-              y: { stacked: true, ticks: { color: textColorSecondary } } }
+            scales: {
+                x: { stacked: true, ticks: { color: textColorSecondary } },
+                y: { stacked: true, ticks: { color: textColorSecondary } }
+            }
         };
 
     } else { // Monthly 또는 다른 주기의 경우
@@ -269,20 +270,20 @@ const setChartDataAndOptions = (data, frequency) => {
 
 // --- 라우터 및 UI 상호작용 감지 ---
 watch(() => route.params.ticker, (newTicker) => {
-  if (newTicker) {
-    isPriceChartMode.value = false; // 다른 티커로 이동 시 항상 배당금 모드로 리셋
-    selectedTimeRange.value = '1Y';
-    fetchData(newTicker);
-  }
+    if (newTicker) {
+        isPriceChartMode.value = false; // 다른 티커로 이동 시 항상 배당금 모드로 리셋
+        selectedTimeRange.value = '1Y';
+        fetchData(newTicker);
+    }
 }, { immediate: true });
 
 watch(chartDisplayData, (newData) => {
-  if (newData && newData.length > 0 && tickerInfo.value) {
-    setChartDataAndOptions(newData, tickerInfo.value.지급주기);
-  } else {
-    chartData.value = null;
-    chartOptions.value = null;
-  }
+    if (newData && newData.length > 0 && tickerInfo.value) {
+        setChartDataAndOptions(newData, tickerInfo.value.지급주기);
+    } else {
+        chartData.value = null;
+        chartOptions.value = null;
+    }
 }, { deep: true, immediate: true });
 
 // 4. 토글 버튼 상태가 바뀔 때도 차트를 다시 그리도록 watch 추가
@@ -295,55 +296,69 @@ watch(isPriceChartMode, () => {
 
 // Breadcrumb 데이터
 const home = ref({ icon: 'pi pi-home', route: '/' });
+
 const breadcrumbItems = computed(() => [
-  { label: 'ETF 목록', route: '/' },
-  { label: tickerInfo.value ? `${tickerInfo.value.운용사} - ${tickerInfo.value.티커}` : 'Loading...' }
+    // { label: 'ETF 목록', route: '/' },  
+    { label: tickerInfo.value ? `${tickerInfo.value.운용사}` : 'Loading...' },
+    { label: tickerInfo.value ? `${tickerInfo.value.티커}` : 'Loading...' }
 ]);
 </script>
 
 <template>
-  <div class="card">
-    <Breadcrumb :home="home" :model="breadcrumbItems" />
+    <div class="card">
+        <Breadcrumb :home="home" :model="breadcrumbItems">
+            <template #item="{ item, props }">
+                <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                    <a :href="href" v-bind="props.action" @click="navigate">
+                        <span :class="[item.icon, 'text-color']" />
+                        <span class="text-primary font-semibold">{{ item.label }}</span>
+                    </a>
+                </router-link>
+                <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+                    <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+                </a>
+            </template>
+        </Breadcrumb>
 
-    <!-- 로딩 중일 때는 제목을 표시하지 않음 -->
-    <div v-if="!isLoading && tickerInfo">
-        <h2 class="mt-4">{{ tickerInfo.티커 }} 분배금 정보</h2>
-        <p>운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
-    </div>
+        <!-- 로딩 중일 때는 제목을 표시하지 않음 -->
+        <div v-if="!isLoading && tickerInfo">
+            <h2 class="mt-4">{{ tickerInfo.티커 }} 분배금 정보</h2>
+            <p>운용사: {{ tickerInfo.운용사 }} | 지급주기: {{ tickerInfo.지급주기 }}</p>
+        </div>
 
-    <div v-if="isLoading" class="flex justify-center items-center h-48">
-      <ProgressSpinner />
-    </div>
+        <div v-if="isLoading" class="flex justify-center items-center h-48">
+            <ProgressSpinner />
+        </div>
 
-    <div v-else-if="error">
-      <p class="text-red-500">{{ error }}</p>
-    </div>
+        <div v-else-if="error">
+            <p class="text-red-500">{{ error }}</p>
+        </div>
 
-      <template v-else-if="dividendHistory.length > 0">
-        <!-- 1. 데이터 개수 선택 UI 수정 -->
-        <!-- UI 컨트롤 영역 -->
-        <div class="my-4 flex justify-between items-center">
-            <!-- 토글 버튼 (Weekly ETF일 때만 보임) -->
-            <div v-if="tickerInfo?.지급주기 === 'Weekly'">
-                <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트" 
-                              onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
+        <template v-else-if="dividendHistory.length > 0">
+            <!-- 1. 데이터 개수 선택 UI 수정 -->
+            <!-- UI 컨트롤 영역 -->
+            <div class="my-4 flex justify-between items-center">
+                <!-- 토글 버튼 (Weekly ETF일 때만 보임) -->
+                <div v-if="tickerInfo?.지급주기 === 'Weekly'">
+                    <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트" onIcon="pi pi-chart-line"
+                        offIcon="pi pi-chart-bar" />
+                </div>
+                <!-- 빈 공간을 채우기 위한 div (토글 버튼이 없을 때도 레이아웃 유지) -->
+                <div v-else></div>
+
+                <!-- 시간 범위 선택 버튼 -->
+                <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
             </div>
-            <!-- 빈 공간을 채우기 위한 div (토글 버튼이 없을 때도 레이아웃 유지) -->
-            <div v-else></div>
-            
-            <!-- 시간 범위 선택 버튼 -->
-            <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
+            <div class="card" id="p-chart">
+                <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
+            </div>
+            <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh">
+                <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+            </DataTable>
+        </template>
+
+        <div v-else>
+            <p>표시할 데이터가 없습니다.</p>
         </div>
-        <div class="card" id="p-chart">
-            <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
-        </div>
-        <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh">
-            <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
-        </DataTable>
-    </template>
-    
-    <div v-else>
-      <p>표시할 데이터가 없습니다.</p>
     </div>
-  </div>
 </template>
