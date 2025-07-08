@@ -13,18 +13,15 @@ import Chart from 'primevue/chart';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const route = useRoute();
-
-// --- 데이터 상태 관리 ---
 const tickerInfo = ref(null);
-const dividendHistory = ref([]);
+const dividendHistory = ref([]); // 전체 배당 기록 (최신순)
 const isLoading = ref(true);
 const error = ref(null);
 
-// --- UI 제어 상태 ---
-const countOptions = ref(['10', '20', 'All']);
-const selectedCount = ref('10');
+// --- 1. UI 제어 상태 변경 ---
+const timeRangeOptions = ref(['1Y', '2Y', '3Y', 'Max']); // 옵션 변경
+const selectedTimeRange = ref('1Y'); // 기본값은 '1Y'
 
-// --- 차트 데이터 ---
 const chartData = ref();
 const chartOptions = ref();
 
@@ -62,18 +59,34 @@ const columns = computed(() => {
   return Object.keys(dividendHistory.value[0]).map(key => ({ field: key, header: key }));
 });
 
-// --- 1. 누락되었던 chartDisplayData computed 속성 추가 ---
+// --- 2. 차트 전용 데이터를 '시간 범위' 기준으로 필터링 (핵심 수정) ---
 const chartDisplayData = computed(() => {
   if (dividendHistory.value.length === 0) return [];
-  if (selectedCount.value === 'All') {
-    return [...dividendHistory.value].reverse();
+  
+  if (selectedTimeRange.value === 'Max') {
+    return [...dividendHistory.value].reverse(); // 전체 데이터 (시간 순으로 뒤집음)
   }
-  const count = parseInt(selectedCount.value, 10);
-  return dividendHistory.value.slice(0, count).reverse();
+
+  // 기준 날짜 계산
+  const now = new Date();
+  const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
+  // 오늘로부터 N년 전의 날짜를 계산
+  const cutoffDate = new Date(now.setFullYear(now.getFullYear() - years));
+
+  // 원본 데이터(최신순)에서 기준 날짜 이후의 데이터만 필터링
+  const filteredData = dividendHistory.value.filter(item => {
+    const itemDate = new Date(item['배당락일']);
+    return itemDate >= cutoffDate;
+  });
+  
+  // 차트 표시를 위해 시간 순으로 뒤집음 (과거 -> 현재)
+  return filteredData.reverse();
 });
 
 
-// --- 차트 데이터/옵션 설정 함수 (최종 버전) ---
+// --- 3. setChartDataAndOptions (수정 없음, 그대로 작동) ---
+// 이 함수는 이미 전달받은 데이터를 기반으로 차트를 그리므로,
+// chartDisplayData가 올바른 데이터만 넘겨주면 알아서 잘 작동합니다.
 const setChartDataAndOptions = (data, frequency) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--p-text-color');
@@ -187,10 +200,9 @@ const setChartDataAndOptions = (data, frequency) => {
 };
 
 // --- 라우터 및 UI 상호작용 감지 ---
-// 3. 누락되었던 라우터 변경 감지 watch 추가
 watch(() => route.params.ticker, (newTicker) => {
   if (newTicker) {
-    selectedCount.value = '10'; // 페이지 이동 시 기본값으로 리셋
+    selectedTimeRange.value = '1Y'; // 페이지 이동 시 기본값으로 리셋
     fetchData(newTicker);
   }
 }, { immediate: true });
@@ -205,13 +217,9 @@ watch(chartDisplayData, (newData) => {
   }
 }, { deep: true, immediate: true });
 
-// 사용자 선택 감지 watch 추가
-watch(selectedCount, () => {
-    // chartDisplayData가 selectedCount에 의존하므로, 
-    // 이 값이 바뀌면 chartDisplayData가 자동으로 재계산되고,
-    // 위의 watch(chartDisplayData, ...)가 실행되어 차트가 업데이트됩니다.
-});
-
+// 사용자가 SelectButton을 클릭하면 chartDisplayData가 자동으로 재계산되고,
+// 위의 watch가 실행되어 차트가 업데이트됩니다.
+// 따라서 별도의 watch(selectedTimeRange, ...)는 필요 없습니다.
 
 // Breadcrumb 데이터
 const home = ref({ icon: 'pi pi-home', route: '/' });
@@ -240,8 +248,9 @@ const breadcrumbItems = computed(() => [
     </div>
     
     <template v-else-if="dividendHistory.length > 0">
+        <!-- 1. 데이터 개수 선택 UI 수정 -->
         <div class="my-4 flex justify-end">
-            <SelectButton v-model="selectedCount" :options="countOptions" aria-labelledby="basic" />
+            <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
         </div>
         <div class="card" id="p-chart">
             <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
