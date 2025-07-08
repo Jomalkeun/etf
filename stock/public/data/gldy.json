@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "GLDY",
     "운용사": "Defiance",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$17.80 - $20.69",
+    "Volume": "7,670",
+    "Avg. Volume": "6,528",
+    "NAV": "$18.21",
+    "Yield": "N/A",
+    "YTD Daily Total Return": "N/A"
   },
   "dividendHistory": [
     {

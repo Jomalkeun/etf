@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "CRSH",
     "운용사": "YieldMax",
-    "지급주기": "GroupA"
+    "지급주기": "GroupA",
+    "52 Week Range": "$4.21 - $17.67",
+    "Volume": "845,856",
+    "Avg. Volume": "468,108",
+    "NAV": "$5.05",
+    "Yield": "165.77%",
+    "YTD Daily Total Return": "826.75%"
   },
   "dividendHistory": [
     {

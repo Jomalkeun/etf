@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "IWMY",
     "운용사": "Defiance",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$21.84 - $43.50",
+    "Volume": "162,734",
+    "Avg. Volume": "90,680",
+    "NAV": "$24.30",
+    "Yield": "98.58%",
+    "YTD Daily Total Return": "-71.84%"
   },
   "dividendHistory": [
     {

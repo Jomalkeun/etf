@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "FEAT",
     "운용사": "YieldMax",
-    "지급주기": "GroupA"
+    "지급주기": "GroupA",
+    "52 Week Range": "$30.91 - $50.21",
+    "Volume": "18,118",
+    "Avg. Volume": "18,933",
+    "NAV": "$36.65",
+    "Yield": "N/A",
+    "YTD Daily Total Return": "-319.10%"
   },
   "dividendHistory": [
     {

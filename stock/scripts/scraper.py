@@ -32,25 +32,62 @@ def get_historical_prices(ticker_symbol, ex_date_str):
         print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
         return {"before_price": "N/A", "on_price": "N/A"}
 
-# --- 2. yfinance 전용 범용 스크래퍼 (개선된 JSON 구조 반환) ---
+# --- 2. yfinance 전용 범용 스크래퍼 (상세 정보 추가 버전) ---
 def scrape_with_yfinance(ticker_symbol, company, frequency):
     """
-    yfinance API를 사용해 티커 정보를 가져오고,
-    'tickerInfo'와 'dividendHistory'로 구조화하여 반환합니다.
+    yfinance API를 사용해 티커의 상세 정보와 배당 기록을 모두 가져옵니다.
     """
     print(f"Scraping {ticker_symbol.upper()} (Company: {company}) using yfinance API...")
     try:
+        # 1. yfinance Ticker 객체 생성
         ticker = yf.Ticker(ticker_symbol)
+        
+        # 2. 티커의 상세 정보 가져오기 (이것이 핵심입니다!)
+        # .info는 해당 티커의 모든 요약 정보를 담고 있는 딕셔너리입니다.
+        info = ticker.info
+        
+        # 3. 필요한 정보 추출 및 기본값 설정
+        #    - 키가 없는 경우를 대비해 .get(key, 'N/A')를 사용합니다.
+        #    - 숫자 형식은 보기 좋게 포맷팅합니다.
+        fifty_two_week_low = info.get('fiftyTwoWeekLow', 0)
+        fifty_two_week_high = info.get('fiftyTwoWeekHigh', 0)
+        fifty_two_week_range = f"${fifty_two_week_low:.2f} - ${fifty_two_week_high:.2f}" if fifty_two_week_low and fifty_two_week_high else "N/A"
+        
+        volume = info.get('volume', 0)
+        avg_volume = info.get('averageVolume', 0)
+        
+        nav = info.get('navPrice', 0)
+        
+        # Yield (배당수익률)은 여러 이름으로 제공될 수 있습니다.
+        # trailingAnnualDividendYield, yield, dividendYield 순으로 찾습니다.
+        yield_val = info.get('trailingAnnualDividendYield') or info.get('yield') or info.get('dividendYield') or 0
+        
+        ytd_return = info.get('ytdReturn', 0)
+
+        # 4. tickerInfo 객체 생성
+        ticker_info = {
+            "티커": ticker_symbol.upper(),
+            "운용사": company,
+            "지급주기": frequency,
+            "52 Week Range": fifty_two_week_range,
+            "Volume": f"{volume:,}" if volume else "N/A",  # 천 단위 콤마 추가
+            "Avg. Volume": f"{avg_volume:,}" if avg_volume else "N/A",
+            "NAV": f"${nav:.2f}" if nav else "N/A",
+            "Yield": f"{(yield_val * 100):.2f}%" if yield_val else "N/A",
+            "YTD Daily Total Return": f"{(ytd_return * 100):.2f}%" if ytd_return else "N/A",
+        }
+        
+        # --- 배당 기록 가져오는 부분 (이전과 동일) ---
         dividends_df = ticker.dividends.to_frame()
         if dividends_df.empty:
             print(f"  -> No dividend data found for {ticker_symbol.upper()}.")
-            return None # 데이터가 없으면 None을 반환
-
+            # 배당 기록이 없어도, 티커 정보만이라도 반환할 수 있도록 수정
+            return {"tickerInfo": ticker_info, "dividendHistory": []}
+            
         dividends_df = dividends_df.reset_index()
         dividends_df.columns = ['ExDate', 'Dividend']
         dividends_df = dividends_df.sort_values(by='ExDate', ascending=False)
         
-        # --- dividendHistory 배열 생성 ---
         dividend_history = []
         for index, row in dividends_df.head(24).iterrows():
             ex_date = row['ExDate'].to_pydatetime()
@@ -69,11 +106,7 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
             
         # --- 최종 JSON 구조 생성 ---
         final_data = {
-            "tickerInfo": {
-                "티커": ticker_symbol.upper(),
-                "운용사": company,
-                "지급주기": frequency
-            },
+            "tickerInfo": ticker_info,
             "dividendHistory": dividend_history
         }
         
@@ -81,8 +114,7 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
 
     except Exception as e:
         print(f"  -> Error scraping {ticker_symbol.upper()} with yfinance: {e}")
-        return None # 에러 발생 시에도 None 반환
-
+        return None
 
 # --- 3. 메인 실행 로직 (초단순화 버전) ---
 if __name__ == "__main__":

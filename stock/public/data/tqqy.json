@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "TQQY",
     "운용사": "GraniteShares",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$17.64 - $25.38",
+    "Volume": "8,073",
+    "Avg. Volume": "7,680",
+    "NAV": "$18.88",
+    "Yield": "N/A",
+    "YTD Daily Total Return": "N/A"
   },
   "dividendHistory": [
     {

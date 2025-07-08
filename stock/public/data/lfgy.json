@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "LFGY",
     "운용사": "YieldMax",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$30.09 - $55.11",
+    "Volume": "284,000",
+    "Avg. Volume": "125,533",
+    "NAV": "$40.15",
+    "Yield": "N/A",
+    "YTD Daily Total Return": "N/A"
   },
   "dividendHistory": [
     {

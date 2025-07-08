@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "SDTY",
     "운용사": "YieldMax",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$38.59 - $51.29",
+    "Volume": "19,089",
+    "Avg. Volume": "9,691",
+    "NAV": "$43.87",
+    "Yield": "N/A",
+    "YTD Daily Total Return": "N/A"
   },
   "dividendHistory": [
     {

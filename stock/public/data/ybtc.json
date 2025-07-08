@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "YBTC",
     "운용사": "Roundhill",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$36.43 - $58.31",
+    "Volume": "246,036",
+    "Avg. Volume": "137,188",
+    "NAV": "$46.73",
+    "Yield": "44.35%",
+    "YTD Daily Total Return": "1323.48%"
   },
   "dividendHistory": [
     {

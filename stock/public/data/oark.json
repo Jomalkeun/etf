@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "OARK",
     "운용사": "YieldMax",
-    "지급주기": "GroupA"
+    "지급주기": "GroupA",
+    "52 Week Range": "$6.34 - $11.35",
+    "Volume": "272,517",
+    "Avg. Volume": "114,233",
+    "NAV": "$8.40",
+    "Yield": "55.65%",
+    "YTD Daily Total Return": "-684.49%"
   },
   "dividendHistory": [
     {

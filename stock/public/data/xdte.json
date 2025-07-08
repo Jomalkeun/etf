@@ -2,7 +2,13 @@
   "tickerInfo": {
     "티커": "XDTE",
     "운용사": "Roundhill",
-    "지급주기": "Weekly"
+    "지급주기": "Weekly",
+    "52 Week Range": "$38.63 - $53.78",
+    "Volume": "266,228",
+    "Avg. Volume": "221,391",
+    "NAV": "$43.53",
+    "Yield": "31.53%",
+    "YTD Daily Total Return": "-293.04%"
   },
   "dividendHistory": [
     {
