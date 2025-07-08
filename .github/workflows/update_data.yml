@@ -2,8 +2,9 @@ name: Scrape ETF Data
 
 on:
   schedule:
-    # 한국 시간 기준 매일 오전 9시에 실행
+    # 한국 시간 기준 매일 오전 9시에 실행 (UTC 00:00)
     - cron: '0 0 * * *'
+  # 수동 실행을 위한 workflow_dispatch
   workflow_dispatch:
 
 jobs:
@@ -11,27 +12,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 1. 파이썬 환경 설정
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.12' # 당신의 환경에 맞춰
+          cache: 'pip'
+          # 캐시 경로를 stock 폴더 안의 requirements.txt 기준으로 설정 (더 안정적)
+          cache-dependency-path: stock/requirements.txt
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          # webdriver-manager는 더 이상 필요 없으므로 제거하고, undetected-chromedriver를 설치
-          pip install beautifulsoup4 undetected-chromedriver
-
+      # 2. 의존성 설치
+      # 'stock' 폴더 안에 requirements.txt를 만들고, 그 파일을 이용해 설치합니다.
+      - name: Install dependencies
+        run: pip install -r stock/requirements.txt
+        
+      # 3. 스크립트 실행
+      # 'stock/scripts/scraper.py' 라는 정확한 경로를 지정해줍니다.
+      # 그리고 스크립트가 public/data 폴더에 접근할 수 있도록,
+      # 'stock' 폴더를 작업 디렉토리로 지정해줍니다.
       - name: Run scraper script
-        # 스크립트 위치에 맞게 경로 수정
+        working-directory: ./stock
         run: python scripts/scraper.py
 
+      # 4. 변경사항 커밋 및 푸시
+      # 모든 경로는 루트를 기준으로 합니다.
       - name: Commit and push if there are changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          # public 폴더 안의 파일을 커밋 대상으로 지정
-          git add public/dividends.json
+          # 변경된 파일은 'stock/public/data/' 폴더 안에 있습니다.
+          git add stock/public/data/
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update ETF dividend data" && git push)
