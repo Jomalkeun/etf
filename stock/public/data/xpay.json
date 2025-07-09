@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "XPAY",
-    "운용사": "Roundhill",
-    "지급주기": "Monthly",
-    "Update": "2025-07-08 12:29:30 KST",
+    "name": "XPAY",
+    "company": "Roundhill",
+    "frequency": "Monthly",
+    "group": "N/A",
+    "Update": "2025-07-09 12:29:05 KST",
     "52Week": "$44.53 - $62.56",
-    "Volume": "41,152",
-    "AvgVolume": "15,668",
+    "Volume": "91,069",
+    "AvgVolume": "16,653",
     "NAV": "N/A",
     "Yield": "N/A",
     "TotalReturn": "N/A"

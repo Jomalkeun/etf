@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "MARO",
-    "운용사": "YieldMax",
-    "지급주기": "GroupB",
-    "Update": "2025-07-08 12:30:38 KST",
+    "name": "MARO",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "B",
+    "Update": "2025-07-09 12:30:11 KST",
     "52Week": "$17.29 - $53.06",
-    "Volume": "56,640",
-    "AvgVolume": "118,426",
+    "Volume": "49,476",
+    "AvgVolume": "118,316",
     "NAV": "$23.59",
     "Yield": "N/A",
     "TotalReturn": "-1657.36%"

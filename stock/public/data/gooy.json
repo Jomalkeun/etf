@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "GOOY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupA",
-    "Update": "2025-07-08 12:30:20 KST",
+    "name": "GOOY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "A",
+    "Update": "2025-07-09 12:29:54 KST",
     "52Week": "$10.89 - $18.23",
-    "Volume": "144,946",
-    "AvgVolume": "154,605",
+    "Volume": "188,236",
+    "AvgVolume": "156,430",
     "NAV": "$12.58",
     "Yield": "N/A",
     "TotalReturn": "-457.91%"

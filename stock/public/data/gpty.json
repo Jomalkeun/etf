@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "GPTY",
-    "운용사": "YieldMax",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:55 KST",
+    "name": "GPTY",
+    "company": "YieldMax",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:29:30 KST",
     "52Week": "$32.92 - $50.43",
-    "Volume": "51,430",
-    "AvgVolume": "20,785",
+    "Volume": "27,476",
+    "AvgVolume": "20,753",
     "NAV": "$46.47",
     "Yield": "N/A",
     "TotalReturn": "N/A"

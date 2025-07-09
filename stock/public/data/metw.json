@@ -1,15 +1,23 @@
 {
   "tickerInfo": {
-    "티커": "METW",
-    "운용사": "Roundhill",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:45 KST",
+    "name": "METW",
+    "company": "Roundhill",
+    "frequency": "Weekly",
+    "group": "월요일",
+    "Update": "2025-07-09 12:29:21 KST",
     "52Week": "$48.69 - $53.84",
-    "Volume": "5,009",
-    "AvgVolume": "5,392",
+    "Volume": "3,685",
+    "AvgVolume": "5,271",
     "NAV": "N/A",
     "Yield": "N/A",
     "TotalReturn": "N/A"
   },
-  "dividendHistory": []
+  "dividendHistory": [
+    {
+      "배당락일": "25. 07. 07",
+      "배당금": "$0.4460",
+      "배당락전일종가": "$51.02",
+      "배당락일종가": "$50.94"
+    }
+  ]
 }

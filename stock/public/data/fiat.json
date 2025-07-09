@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "FIAT",
-    "운용사": "YieldMax",
-    "지급주기": "GroupC",
-    "Update": "2025-07-08 12:30:52 KST",
+    "name": "FIAT",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "C",
+    "Update": "2025-07-09 12:30:26 KST",
     "52Week": "$3.20 - $23.17",
-    "Volume": "465,801",
-    "AvgVolume": "811,765",
+    "Volume": "697,712",
+    "AvgVolume": "810,615",
     "NAV": "$5.09",
     "Yield": "N/A",
     "TotalReturn": "-1116.39%"

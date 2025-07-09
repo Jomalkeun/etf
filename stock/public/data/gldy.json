@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "GLDY",
-    "운용사": "Defiance",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:31:35 KST",
+    "name": "GLDY",
+    "company": "Defiance",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:31:08 KST",
     "52Week": "$17.80 - $20.69",
-    "Volume": "7,670",
-    "AvgVolume": "6,528",
+    "Volume": "14,763",
+    "AvgVolume": "6,448",
     "NAV": "$18.21",
     "Yield": "N/A",
     "TotalReturn": "N/A"

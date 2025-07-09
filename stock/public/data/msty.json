@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "MSTY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupD",
-    "Update": "2025-07-08 12:31:10 KST",
+    "name": "MSTY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "D",
+    "Update": "2025-07-09 12:30:44 KST",
     "52Week": "$17.10 - $46.50",
-    "Volume": "14,215,110",
-    "AvgVolume": "10,094,515",
+    "Volume": "10,390,379",
+    "AvgVolume": "10,083,111",
     "NAV": "$21.18",
     "Yield": "N/A",
     "TotalReturn": "2160.54%"

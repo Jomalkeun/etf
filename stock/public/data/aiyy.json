@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "AIYY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupD",
-    "Update": "2025-07-08 12:31:01 KST",
+    "name": "AIYY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "D",
+    "Update": "2025-07-09 12:30:35 KST",
     "52Week": "$3.95 - $12.15",
-    "Volume": "2,397,708",
-    "AvgVolume": "813,456",
+    "Volume": "2,885,489",
+    "AvgVolume": "851,161",
     "NAV": "$4.45",
     "Yield": "N/A",
     "TotalReturn": "-2417.86%"

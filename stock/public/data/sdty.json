@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "SDTY",
-    "운용사": "YieldMax",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:30:03 KST",
+    "name": "SDTY",
+    "company": "YieldMax",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:29:37 KST",
     "52Week": "$38.59 - $51.29",
-    "Volume": "19,089",
-    "AvgVolume": "9,691",
+    "Volume": "6,959",
+    "AvgVolume": "9,323",
     "NAV": "$43.87",
     "Yield": "N/A",
     "TotalReturn": "N/A"

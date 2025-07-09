@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "PLTY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupB",
-    "Update": "2025-07-08 12:30:44 KST",
+    "name": "PLTY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "B",
+    "Update": "2025-07-09 12:30:17 KST",
     "52Week": "$46.28 - $95.08",
-    "Volume": "409,301",
-    "AvgVolume": "497,150",
+    "Volume": "367,685",
+    "AvgVolume": "499,716",
     "NAV": "N/A",
     "Yield": "N/A",
     "TotalReturn": "N/A"

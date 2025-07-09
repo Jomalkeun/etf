@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "TSMY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupA",
-    "Update": "2025-07-08 12:30:24 KST",
+    "name": "TSMY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "A",
+    "Update": "2025-07-09 12:29:57 KST",
     "52Week": "$12.10 - $22.31",
-    "Volume": "400,359",
-    "AvgVolume": "68,043",
+    "Volume": "231,163",
+    "AvgVolume": "71,426",
     "NAV": "$16.23",
     "Yield": "N/A",
     "TotalReturn": "-134.98%"

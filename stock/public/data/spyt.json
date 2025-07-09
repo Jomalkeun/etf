@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "SPYT",
-    "운용사": "Defiance",
-    "지급주기": "Monthly",
-    "Update": "2025-07-08 12:31:38 KST",
+    "name": "SPYT",
+    "company": "Defiance",
+    "frequency": "Monthly",
+    "group": "N/A",
+    "Update": "2025-07-09 12:31:11 KST",
     "52Week": "$14.87 - $20.49",
-    "Volume": "117,190",
-    "AvgVolume": "75,646",
+    "Volume": "70,308",
+    "AvgVolume": "75,023",
     "NAV": "$17.67",
     "Yield": "N/A",
     "TotalReturn": "-78.53%"

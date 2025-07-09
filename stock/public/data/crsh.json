@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "CRSH",
-    "운용사": "YieldMax",
-    "지급주기": "GroupA",
-    "Update": "2025-07-08 12:30:17 KST",
+    "name": "CRSH",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "A",
+    "Update": "2025-07-09 12:29:51 KST",
     "52Week": "$4.21 - $17.67",
-    "Volume": "845,856",
-    "AvgVolume": "468,108",
+    "Volume": "792,144",
+    "AvgVolume": "473,498",
     "NAV": "$5.05",
     "Yield": "N/A",
     "TotalReturn": "826.75%"

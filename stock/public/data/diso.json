@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "DISO",
-    "운용사": "YieldMax",
-    "지급주기": "GroupD",
-    "Update": "2025-07-08 12:31:08 KST",
+    "name": "DISO",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "D",
+    "Update": "2025-07-09 12:30:42 KST",
     "52Week": "$11.71 - $18.12",
-    "Volume": "21,017",
-    "AvgVolume": "17,553",
+    "Volume": "19,232",
+    "AvgVolume": "17,035",
     "NAV": "$14.15",
     "Yield": "N/A",
     "TotalReturn": "-200.49%"

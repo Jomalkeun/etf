@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "QDTY",
-    "운용사": "YieldMax",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:59 KST",
+    "name": "QDTY",
+    "company": "YieldMax",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:29:34 KST",
     "52Week": "$36.76 - $52.55",
-    "Volume": "19,658",
-    "AvgVolume": "9,378",
+    "Volume": "4,700",
+    "AvgVolume": "8,745",
     "NAV": "$42.78",
     "Yield": "N/A",
     "TotalReturn": "N/A"

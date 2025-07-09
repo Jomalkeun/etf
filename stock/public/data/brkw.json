@@ -1,15 +1,23 @@
 {
   "tickerInfo": {
-    "티커": "BRKW",
-    "운용사": "Roundhill",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:41 KST",
-    "52Week": "$48.63 - $51.64",
-    "Volume": "7,433",
-    "AvgVolume": "8,107",
+    "name": "BRKW",
+    "company": "Roundhill",
+    "frequency": "Weekly",
+    "group": "월요일",
+    "Update": "2025-07-09 12:29:17 KST",
+    "52Week": "$48.45 - $51.64",
+    "Volume": "6,569",
+    "AvgVolume": "8,007",
     "NAV": "N/A",
     "Yield": "N/A",
     "TotalReturn": "N/A"
   },
-  "dividendHistory": []
+  "dividendHistory": [
+    {
+      "배당락일": "25. 07. 07",
+      "배당금": "$0.2200",
+      "배당락전일종가": "$49.56",
+      "배당락일종가": "$48.70"
+    }
+  ]
 }

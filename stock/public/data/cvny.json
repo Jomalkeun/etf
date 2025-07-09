@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "CVNY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupC",
-    "Update": "2025-07-08 12:30:51 KST",
+    "name": "CVNY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "C",
+    "Update": "2025-07-09 12:30:25 KST",
     "52Week": "$24.83 - $58.17",
-    "Volume": "65,538",
-    "AvgVolume": "100,840",
+    "Volume": "48,742",
+    "AvgVolume": "100,880",
     "NAV": "$45.56",
     "Yield": "N/A",
     "TotalReturn": "N/A"

@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "NFLY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupC",
-    "Update": "2025-07-08 12:30:57 KST",
+    "name": "NFLY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "C",
+    "Update": "2025-07-09 12:30:31 KST",
     "52Week": "$14.42 - $19.85",
-    "Volume": "282,492",
-    "AvgVolume": "225,230",
+    "Volume": "227,651",
+    "AvgVolume": "226,628",
     "NAV": "$18.44",
     "Yield": "N/A",
     "TotalReturn": "2820.60%"

@@ -6,7 +6,6 @@ import { joinURL } from 'ufo';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import ProgressSpinner from 'primevue/progressspinner';
-import Breadcrumb from 'primevue/breadcrumb';
 import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
 import Chart from 'primevue/chart';
@@ -274,7 +273,7 @@ watch(() => route.params.ticker, (newTicker) => {
 
 watch(chartDisplayData, (newData) => {
     if (newData && newData.length > 0 && tickerInfo.value) {
-        setChartDataAndOptions(newData, tickerInfo.value.지급주기);
+        setChartDataAndOptions(newData, tickerInfo.value.frequency);
     } else {
         chartData.value = null;
         chartOptions.value = null;
@@ -283,7 +282,7 @@ watch(chartDisplayData, (newData) => {
 
 watch(isPriceChartMode, () => {
     if (chartDisplayData.value && chartDisplayData.value.length > 0 && tickerInfo.value) {
-        setChartDataAndOptions(chartDisplayData.value, tickerInfo.value.지급주기);
+        setChartDataAndOptions(chartDisplayData.value, tickerInfo.value.frequency);
     }
 });
 
@@ -292,8 +291,8 @@ watch(isPriceChartMode, () => {
 // const breadcrumbItems = computed(() => {
 //     if (!tickerInfo.value) return [{ label: 'Loading...' }];
 //     return [
-//         { label: tickerInfo.value.운용사 },
-//         { label: tickerInfo.value.티커 }
+//         { label: tickerInfo.value.company },
+//         { label: tickerInfo.value.name }
 //     ];
 // });
 
@@ -332,9 +331,10 @@ const stats = computed(() => {
 });
 </script>
 <!-- 
-    "티커": "LFGY",
-    "운용사": "YieldMax",
-    "지급주기": "Weekly",
+    "name": "LFGY",
+    "company": "YieldMax",
+    "frequency": "Weekly",
+    "group": "group A",
     "Update": "2025-07-08 12:11:09 KST",
     "52Week": "$30.09 - $55.11",
     "Volume": "284,000",
@@ -360,8 +360,8 @@ const stats = computed(() => {
 
             <div id="tickerInfo">
                 <div class="tickerInfo__header">
-                    <div class="tickerInfo__brand"> {{ tickerInfo.운용사 }} &middot; {{ tickerInfo.지급주기 }}</div>
-                    <h2 class="tickerInfo__title">{{ tickerInfo.티커 }}</h2>
+                    <div class="tickerInfo__brand"> {{ tickerInfo.company }} &middot; {{ tickerInfo.frequency }} &middot; {{ tickerInfo.group }}</div>
+                    <h2 class="tickerInfo__title">{{ tickerInfo.name }} &middot; {{ tickerInfo.name }}</h2>
                 </div>
                 <div class="tickerInfo__status">
                     <div class="stats">

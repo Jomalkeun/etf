@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "TSII",
-    "운용사": "Rex",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:31:45 KST",
+    "name": "TSII",
+    "company": "Rex",
+    "frequency": "Weekly",
+    "group": "화요일",
+    "Update": "2025-07-09 12:31:18 KST",
     "52Week": "$20.04 - $25.40",
-    "Volume": "80,920",
-    "AvgVolume": "18,245",
+    "Volume": "29,795",
+    "AvgVolume": "18,873",
     "NAV": "$22.30",
     "Yield": "N/A",
     "TotalReturn": "N/A"

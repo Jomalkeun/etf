@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "WEEK",
-    "운용사": "Roundhill",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:35 KST",
+    "name": "WEEK",
+    "company": "Roundhill",
+    "frequency": "Weekly",
+    "group": "화요일",
+    "Update": "2025-07-09 12:29:10 KST",
     "52Week": "$98.00 - $100.88",
-    "Volume": "21,866",
-    "AvgVolume": "26,493",
+    "Volume": "8,430",
+    "AvgVolume": "26,546",
     "NAV": "$100.07",
     "Yield": "N/A",
     "TotalReturn": "N/A"

@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "TSYY",
-    "운용사": "GraniteShares",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:31:52 KST",
+    "name": "TSYY",
+    "company": "GraniteShares",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:31:25 KST",
     "52Week": "$9.20 - $26.15",
-    "Volume": "564,462",
-    "AvgVolume": "118,060",
+    "Volume": "400,552",
+    "AvgVolume": "124,643",
     "NAV": "$10.68",
     "Yield": "N/A",
     "TotalReturn": "-1964.73%"

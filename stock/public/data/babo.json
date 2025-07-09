@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "BABO",
-    "운용사": "YieldMax",
-    "지급주기": "GroupB",
-    "Update": "2025-07-08 12:30:29 KST",
+    "name": "BABO",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "B",
+    "Update": "2025-07-09 12:30:02 KST",
     "52Week": "$14.39 - $25.53",
-    "Volume": "49,487",
-    "AvgVolume": "54,600",
+    "Volume": "36,466",
+    "AvgVolume": "54,225",
     "NAV": "$16.18",
     "Yield": "N/A",
     "TotalReturn": "1755.81%"

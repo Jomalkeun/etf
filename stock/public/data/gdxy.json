@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "GDXY",
-    "운용사": "YieldMax",
-    "지급주기": "GroupB",
-    "Update": "2025-07-08 12:30:34 KST",
+    "name": "GDXY",
+    "company": "YieldMax",
+    "frequency": "Every 4 Week",
+    "group": "B",
+    "Update": "2025-07-09 12:30:08 KST",
     "52Week": "$14.18 - $19.55",
-    "Volume": "307,246",
-    "AvgVolume": "196,650",
+    "Volume": "408,404",
+    "AvgVolume": "202,248",
     "NAV": "$15.61",
     "Yield": "N/A",
     "TotalReturn": "3135.98%"

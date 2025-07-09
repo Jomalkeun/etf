@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "MSII",
-    "운용사": "Rex",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:31:43 KST",
+    "name": "MSII",
+    "company": "Rex",
+    "frequency": "Weekly",
+    "group": "화요일",
+    "Update": "2025-07-09 12:31:16 KST",
     "52Week": "$23.12 - $26.21",
-    "Volume": "37,793",
-    "AvgVolume": "53,863",
+    "Volume": "49,642",
+    "AvgVolume": "53,734",
     "NAV": "$25.33",
     "Yield": "N/A",
     "TotalReturn": "N/A"

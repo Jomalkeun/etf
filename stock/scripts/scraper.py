@@ -2,7 +2,7 @@ import time
 import json
 import os
 import yfinance as yf
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def get_historical_prices(ticker_symbol, ex_date_str):
     """yfinance를 사용해 특정 티커의 배당락일 및 배당락 전일 종가를 가져옵니다."""
@@ -32,11 +32,12 @@ def get_historical_prices(ticker_symbol, ex_date_str):
         return {"before_price": "N/A", "on_price": "N/A"}
 
 # --- yfinance 전용 범용 스크래퍼 (날짜 형식 YY. MM. DD 로 변경) ---
-def scrape_with_yfinance(ticker_symbol, company, frequency):
+# scrape_with_yfinance 함수 정의 부분
+def scrape_with_yfinance(ticker_symbol, company, frequency, group):
     """
     yfinance API를 사용해 티커 정보를 가져오고, 두 가지 날짜 형식을 포함하여 반환합니다.
     """
-    print(f"Scraping {ticker_symbol.upper()} (Company: {company}) using yfinance API...")
+    print(f"Scraping {ticker_symbol.upper()} (Group: {group}) using yfinance API...")
     try:
         ticker = yf.Ticker(ticker_symbol)
         info = ticker.info
@@ -46,7 +47,10 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
         update_time_str = now_kst.strftime('%Y-%m-%d %H:%M:%S KST')
 
         ticker_info = {
-            "티커": ticker_symbol.upper(), "운용사": company, "지급주기": frequency,
+            "name": ticker_symbol.upper(),
+            "company": company,
+            "frequency": frequency,
+            "group": group,
             "Update": update_time_str,
             "52Week": f"${info.get('fiftyTwoWeekLow', 0):.2f} - ${info.get('fiftyTwoWeekHigh', 0):.2f}" if info.get('fiftyTwoWeekLow') else "N/A",
             "Volume": f"{info.get('volume', 0):,}" if info.get('volume') else "N/A",
@@ -88,121 +92,40 @@ def scrape_with_yfinance(ticker_symbol, company, frequency):
         print(f"  -> Error scraping {ticker_symbol.upper()} with yfinance: {e}")
         return None
     
-# --- 3. 메인 실행 로직 (초단순화 버전) ---
-# --- 메인 실행 로직 (증분 업데이트 적용 최종 버전) ---
+# --- 3. 메인 실행 로직 (nav.json 실제 구조에 맞춤) ---
 if __name__ == "__main__":
     
-    # 형식: '티커': {'company': '운용사 이름', 'frequency': '지급 주기'}
-    all_tickers_info = {
-        # Roundhill
-        "XDTE": {"company": "Roundhill", "frequency": "Weekly"},
-        "QDTE": {"company": "Roundhill", "frequency": "Weekly"},
-        "RDTE": {"company": "Roundhill", "frequency": "Weekly"},
-        "XPAY": {"company": "Roundhill", "frequency": "Monthly"},
-        "YBTC": {"company": "Roundhill", "frequency": "Weekly"},
-        "YETH": {"company": "Roundhill", "frequency": "Weekly"},
-        "WEEK": {"company": "Roundhill", "frequency": "Weekly"},
-        "MAGY": {"company": "Roundhill", "frequency": "Weekly"},
-        "AAPW": {"company": "Roundhill", "frequency": "Weekly"},
-        "AMZW": {"company": "Roundhill", "frequency": "Weekly"},
-        "BRKW": {"company": "Roundhill", "frequency": "Weekly"},
-        "COIW": {"company": "Roundhill", "frequency": "Weekly"},
-        "HOOW": {"company": "Roundhill", "frequency": "Weekly"},
-        "METW": {"company": "Roundhill", "frequency": "Weekly"},
-        "NFLW": {"company": "Roundhill", "frequency": "Weekly"},
-        "NVDW": {"company": "Roundhill", "frequency": "Weekly"},
-        "PLTW": {"company": "Roundhill", "frequency": "Weekly"},
-        "TSLW": {"company": "Roundhill", "frequency": "Weekly"},
+    # --- 1. nav.json 파일 로드 (group 정보 추가) ---
+    nav_file_path = 'public/nav.json'
+    all_tickers_info = {}
 
-        # YieldMax
-        "CHPY": {"company": "YieldMax", "frequency": "Weekly"},
-        "GPTY": {"company": "YieldMax", "frequency": "Weekly"},
-        "LFGY": {"company": "YieldMax", "frequency": "Weekly"},
-        "QDTY": {"company": "YieldMax", "frequency": "Weekly"},
-        "RDTY": {"company": "YieldMax", "frequency": "Weekly"},
-        "SDTY": {"company": "YieldMax", "frequency": "Weekly"},
-        "ULTY": {"company": "YieldMax", "frequency": "Weekly"},
-        "YMAG": {"company": "YieldMax", "frequency": "Weekly"},
-        "YMAX": {"company": "YieldMax", "frequency": "Weekly"},
+    try:
+        with open(nav_file_path, 'r', encoding='utf-8') as f:
+            nav_data_json = json.load(f)
+            
+            # nav.json의 실제 구조에 맞춰 데이터를 가져옵니다.
+            # 최상위 키 'nav' 안에 있는 리스트를 사용합니다.
+            ticker_list = nav_data_json.get('nav', [])
+            
+            for item in ticker_list:
+                # 각 아이템(딕셔너리)에서 필요한 정보를 추출합니다.
+                ticker = item.get('name')
+                if ticker:
+                    all_tickers_info[ticker] = {
+                        "company": item.get('company', 'N/A'),
+                        "frequency": item.get('frequency', 'N/A'),
+                        "group": item.get('group', 'N/A')
+                    }
+        print(f"Successfully loaded {len(all_tickers_info)} tickers from {nav_file_path}")
+    except Exception as e:
+        print(f"An unexpected error occurred while loading {nav_file_path}: {e}")
+        exit()
 
-        "TSLY": {"company": "YieldMax", "frequency": "GroupA"},
-        "OARK": {"company": "YieldMax", "frequency": "GroupA"},
-        "BRKC": {"company": "YieldMax", "frequency": "GroupA"},
-        "CRSH": {"company": "YieldMax", "frequency": "GroupA"},
-        "FEAT": {"company": "YieldMax", "frequency": "GroupA"},
-        "GOOY": {"company": "YieldMax", "frequency": "GroupA"},
-        "SNOY": {"company": "YieldMax", "frequency": "GroupA"},
-        "TSMY": {"company": "YieldMax", "frequency": "GroupA"},
-        "XOMO": {"company": "YieldMax", "frequency": "GroupA"},
-        "YBIT": {"company": "YieldMax", "frequency": "GroupA"},
-
-        "BABO": {"company": "YieldMax", "frequency": "GroupB"},
-        "DIPS": {"company": "YieldMax", "frequency": "GroupB"},
-        "FBY": {"company": "YieldMax", "frequency": "GroupB"},
-        "GDXY": {"company": "YieldMax", "frequency": "GroupB"},
-        "JPMO": {"company": "YieldMax", "frequency": "GroupB"},
-        "MARO": {"company": "YieldMax", "frequency": "GroupB"},
-        "MRNY": {"company": "YieldMax", "frequency": "GroupB"},
-        "NVDY": {"company": "YieldMax", "frequency": "GroupB"},
-        "PLTY": {"company": "YieldMax", "frequency": "GroupB"},
-
-        "ABNY": {"company": "YieldMax", "frequency": "GroupC"},
-        "AMDY": {"company": "YieldMax", "frequency": "GroupC"},
-        "CONY": {"company": "YieldMax", "frequency": "GroupC"},
-        "CVNY": {"company": "YieldMax", "frequency": "GroupC"},
-        "FIAT": {"company": "YieldMax", "frequency": "GroupC"},
-        "HOOY": {"company": "YieldMax", "frequency": "GroupC"},
-        "MSFO": {"company": "YieldMax", "frequency": "GroupC"},
-        "NFLY": {"company": "YieldMax", "frequency": "GroupC"},
-        "PYPY": {"company": "YieldMax", "frequency": "GroupC"},
-
-        "AIYY": {"company": "YieldMax", "frequency": "GroupD"},
-        "AMZY": {"company": "YieldMax", "frequency": "GroupD"},
-        "APLY": {"company": "YieldMax", "frequency": "GroupD"},
-        "DISO": {"company": "YieldMax", "frequency": "GroupD"},
-        "MSTY": {"company": "YieldMax", "frequency": "GroupD"},
-        "SMCY": {"company": "YieldMax", "frequency": "GroupD"},
-        "WNTR": {"company": "YieldMax", "frequency": "GroupD"},
-        "XYZY": {"company": "YieldMax", "frequency": "GroupD"},
-        "YQQQ": {"company": "YieldMax", "frequency": "GroupD"},
-
-        # JPMorgan
-        "JEPI": {"company": "J.P. Morgan", "frequency": "Monthly"},
-        "JEPQ": {"company": "J.P. Morgan", "frequency": "Monthly"},
-        "JFLI": {"company": "J.P. Morgan", "frequency": "Monthly"},
-
-        
-        # 슈왑
-        "SCHD": {"company": "Schwab", "frequency": "Quarterly"},
-
-        # Defiance
-        "QQQY": {"company": "Defiance", "frequency": "Weekly"},
-        "WDTE": {"company": "Defiance", "frequency": "Weekly"},
-        "IWMY": {"company": "Defiance", "frequency": "Weekly"},
-        "USOY": {"company": "Defiance", "frequency": "Weekly"},
-        "GLDY": {"company": "Defiance", "frequency": "Weekly"},
-        "MST": {"company": "Defiance", "frequency": "Weekly"},
-        "SPYT": {"company": "Defiance", "frequency": "Monthly"},
-        "QQQT": {"company": "Defiance", "frequency": "Monthly"},
-
-        # Rex
-        "COII": {"company": "Rex", "frequency": "Weekly"},
-        "MSII": {"company": "Rex", "frequency": "Weekly"},
-        "NVII": {"company": "Rex", "frequency": "Weekly"},
-        "TSII": {"company": "Rex", "frequency": "Weekly"},
-        
-        #GraniteShares
-        "XBTY": {"company": "GraniteShares", "frequency": "Weekly"},
-        "NVYY": {"company": "GraniteShares", "frequency": "Weekly"},
-        "TQQY": {"company": "GraniteShares", "frequency": "Weekly"},
-        "YSPY": {"company": "GraniteShares", "frequency": "Weekly"},
-        "TSYY": {"company": "GraniteShares", "frequency": "Weekly"},
-    }
-    
+    # --- 2. 스크래핑 실행 (함수 호출 시 group 정보 전달) ---
     output_dir = 'public/data'
     os.makedirs(output_dir, exist_ok=True)
     
-    print("\n--- Starting All Scrapes with Data Enrichment and Incremental Update ---")
+    print("\n--- Starting All Scrapes based on nav.json ---")
     
     for ticker, info in all_tickers_info.items():
         file_path = os.path.join(output_dir, f"{ticker.lower()}.json")
@@ -215,12 +138,19 @@ if __name__ == "__main__":
                     print(f"  -> Found existing data for {ticker}.")
             except Exception as e:
                 print(f"  -> Warning: Could not read existing file for {ticker}. Error: {e}")
-
-        new_scraped_data = scrape_with_yfinance(ticker, info['company'], info['frequency'])
+        
+        # 함수를 호출할 때 info['group']을 추가로 전달합니다.
+        new_scraped_data = scrape_with_yfinance(
+            ticker, 
+            info['company'], 
+            info['frequency'], 
+            info['group']
+        )
+        
         if not new_scraped_data:
             print(f"  -> No data scraped from yfinance for {ticker}. Skipping update.")
             continue
-            
+
         new_ticker_info = new_scraped_data.get('tickerInfo', {})
         new_dividend_history = new_scraped_data.get('dividendHistory', [])
         new_dividends_map_by_ts = {item['배당락일_ts']: item for item in new_dividend_history}
@@ -236,12 +166,10 @@ if __name__ == "__main__":
                 old_date_str = old_item.get('배당락일')
                 if not old_date_str: continue
 
-                old_timestamp = old_item.get('배당락일_ts')
-                if not old_timestamp:
-                    try:
-                        old_timestamp = datetime.strptime(old_date_str, '%y. %m. %d.').timestamp()
-                    except ValueError:
-                        continue
+                try:
+                    old_timestamp = datetime.strptime(old_date_str, '%y. %m. %d.').timestamp()
+                except ValueError:
+                    continue
                 
                 existing_timestamps.add(old_timestamp)
                 
@@ -266,11 +194,25 @@ if __name__ == "__main__":
             
             final_history = new_entries_to_add + enriched_history
 
-        # 최종 저장 전, 정렬 및 불필요한 필드 제거
-        final_history.sort(key=lambda x: x.get('배당락일_ts', 0), reverse=True)
+         # 1. '배당락일_ts'가 없는 항목(수동 추가 데이터)에 대해 타임스탬프를 생성해줍니다.
+        for item in final_history:
+            if '배당락일_ts' not in item:
+                try:
+                    # 마침표가 있든 없든 처리할 수 있도록 .strip('.') 사용
+                    date_str = item.get('배당락일', '').strip('.')
+                    item['배당락일_ts'] = datetime.strptime(date_str, '%y. %m. %d').timestamp()
+                except (ValueError, TypeError):
+                    # 변환 실패 시, 정렬에서 뒤로 밀리도록 0을 할당
+                    item['배당락일_ts'] = 0
+
+        # 2. 이제 모든 항목에 '배당락일_ts'가 있으므로, 이것으로 안전하게 정렬합니다.
+        final_history.sort(key=lambda x: x['배당락일_ts'], reverse=True)
+        
+        # 3. 마지막으로, 내부 처리용이었던 '배당락일_ts' 필드를 제거합니다.
         for item in final_history:
             item.pop('배당락일_ts', None)
 
+        # --- 이후 파일 저장 로직은 동일 ---
         final_data_to_save = {
             "tickerInfo": new_ticker_info,
             "dividendHistory": final_history

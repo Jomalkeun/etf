@@ -23,8 +23,9 @@ python scripts/scraper.py
 
 
 
+# 3-1. 크롬 없을때
 
-크롬 없을때
+cd /workspaces/etf/stock
 
 sudo apt-get update
 
@@ -41,8 +42,7 @@ sudo apt-get install -y google-chrome-stable
 
 
 
-
-
+# 4. 개발환경 셋팅
 
 npm install
 

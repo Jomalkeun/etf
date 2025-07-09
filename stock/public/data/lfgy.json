@@ -1,12 +1,13 @@
 {
   "tickerInfo": {
-    "티커": "LFGY",
-    "운용사": "YieldMax",
-    "지급주기": "Weekly",
-    "Update": "2025-07-08 12:29:57 KST",
+    "name": "LFGY",
+    "company": "YieldMax",
+    "frequency": "Weekly",
+    "group": "목요일",
+    "Update": "2025-07-09 12:29:32 KST",
     "52Week": "$30.09 - $55.11",
-    "Volume": "284,000",
-    "AvgVolume": "125,533",
+    "Volume": "241,341",
+    "AvgVolume": "127,856",
     "NAV": "$40.15",
     "Yield": "N/A",
     "TotalReturn": "N/A"
