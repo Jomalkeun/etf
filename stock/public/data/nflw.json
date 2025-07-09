@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "NFLW",
+    "fullname": "Roundhill ETF Trust - NFLX WeeklyPay ETF",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "월요일",
-    "Update": "2025-07-09 12:29:22 KST",
+    "Update": "2025-07-09 12:39:45 KST",
     "52Week": "$49.94 - $55.24",
     "Volume": "7,542",
     "AvgVolume": "4,635",

@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "COIW",
+    "fullname": "Roundhill COIN WeeklyPay ETF",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "월요일",
-    "Update": "2025-07-09 12:29:18 KST",
+    "Update": "2025-07-09 12:39:41 KST",
     "52Week": "$21.82 - $60.00",
     "Volume": "63,194",
     "AvgVolume": "31,868",

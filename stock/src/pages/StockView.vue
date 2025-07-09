@@ -361,7 +361,7 @@ const stats = computed(() => {
             <div id="tickerInfo">
                 <div class="tickerInfo__header">
                     <div class="tickerInfo__brand"> {{ tickerInfo.company }} &middot; {{ tickerInfo.frequency }} &middot; {{ tickerInfo.group }}</div>
-                    <h2 class="tickerInfo__title">{{ tickerInfo.name }} &middot; {{ tickerInfo.name }}</h2>
+                    <h2 class="tickerInfo__title">{{ tickerInfo.name }} <small>&middot; {{ tickerInfo.fullname }}</small></h2>
                 </div>
                 <div class="tickerInfo__status">
                     <div class="stats">

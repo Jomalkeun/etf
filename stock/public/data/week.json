@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "WEEK",
+    "fullname": "WEEK",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "화요일",
-    "Update": "2025-07-09 12:29:10 KST",
+    "Update": "2025-07-09 12:39:33 KST",
     "52Week": "$98.00 - $100.88",
     "Volume": "8,430",
     "AvgVolume": "26,546",

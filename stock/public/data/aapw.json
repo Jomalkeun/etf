@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "AAPW",
+    "fullname": "Roundhill AAPL WeeklyPay ETF",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "월요일",
-    "Update": "2025-07-09 12:29:14 KST",
+    "Update": "2025-07-09 12:39:37 KST",
     "52Week": "$31.54 - $51.86",
     "Volume": "12,020",
     "AvgVolume": "10,340",

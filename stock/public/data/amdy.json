@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "AMDY",
+    "fullname": "YieldMax AMD Option Income Strategy ETF",
     "company": "YieldMax",
     "frequency": "Every 4 Week",
     "group": "C",
-    "Update": "2025-07-09 12:30:20 KST",
+    "Update": "2025-07-09 12:40:43 KST",
     "52Week": "$5.83 - $18.29",
     "Volume": "336,364",
     "AvgVolume": "499,645",

@@ -31,12 +31,8 @@ def get_historical_prices(ticker_symbol, ex_date_str):
         print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
         return {"before_price": "N/A", "on_price": "N/A"}
 
-# --- yfinance 전용 범용 스크래퍼 (날짜 형식 YY. MM. DD 로 변경) ---
-# scrape_with_yfinance 함수 정의 부분
+# --- yfinance 전용 범용 스크래퍼 ---
 def scrape_with_yfinance(ticker_symbol, company, frequency, group):
-    """
-    yfinance API를 사용해 티커 정보를 가져오고, 두 가지 날짜 형식을 포함하여 반환합니다.
-    """
     print(f"Scraping {ticker_symbol.upper()} (Group: {group}) using yfinance API...")
     try:
         ticker = yf.Ticker(ticker_symbol)
@@ -46,8 +42,12 @@ def scrape_with_yfinance(ticker_symbol, company, frequency, group):
         now_kst = now_utc + timedelta(hours=9)
         update_time_str = now_kst.strftime('%Y-%m-%d %H:%M:%S KST')
 
+        # 1. 'longName' 키로 fullname을 가져옵니다. 없으면 티커를 기본값으로 사용합니다.
+        full_name = info.get('longName', ticker_symbol.upper())
+
         ticker_info = {
             "name": ticker_symbol.upper(),
+            "fullname": full_name,
             "company": company,
             "frequency": frequency,
             "group": group,

@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "XDTE",
+    "fullname": "Roundhill S&P 500 0DTE Covered Call Strategy ETF",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "목요일",
-    "Update": "2025-07-09 12:28:59 KST",
+    "Update": "2025-07-09 12:39:22 KST",
     "52Week": "$38.63 - $53.78",
     "Volume": "170,892",
     "AvgVolume": "216,436",

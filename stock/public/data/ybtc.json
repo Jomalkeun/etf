@@ -1,10 +1,11 @@
 {
   "tickerInfo": {
     "name": "YBTC",
+    "fullname": "Roundhill Bitcoin Covered Call Strategy ETF",
     "company": "Roundhill",
     "frequency": "Weekly",
     "group": "목요일",
-    "Update": "2025-07-09 12:29:07 KST",
+    "Update": "2025-07-09 12:39:30 KST",
     "52Week": "$36.43 - $58.31",
     "Volume": "173,117",
     "AvgVolume": "137,571",
