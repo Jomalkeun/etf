@@ -281,9 +281,24 @@ const setChartDataAndOptions = (data, frequency) => {
             aspectRatio: 0.6,
             plugins: {
                 legend: { display: false },
-                datalabels: { 
-                    // 이제 각 데이터셋에서 라벨 표시 여부를 제어하므로, 여기서는 기본 비활성화
-                    display: false
+                datalabels: { display: false }, // 각 데이터셋에서 개별 제어
+                
+                tooltip: {
+                    mode: 'index', // 'nearest'에서 'index'로 변경
+                    intersect: false, // 마우스가 정확히 포인트에 닿지 않아도 툴팁이 나타나게 함
+                    callbacks: {
+                        // 툴팁의 각 라벨을 더 예쁘게 포매팅
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                            }
+                            return label
+                        }
+                    }
                 }
             },
             scales: {
