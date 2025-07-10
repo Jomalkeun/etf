@@ -64,10 +64,10 @@ def scrape_with_yfinance(ticker_symbol, company, frequency, group):
                 dividend_amount = row['Dividend']
                 prices = get_historical_prices(ticker_symbol, ex_date_str_mdy)
                 record = {
-                    '배당락일': ex_date.strftime('%y. %m. %d'),
+                    '배당락': ex_date.strftime('%y. %m. %d'),
                     '배당금': f"${dividend_amount:.4f}",
-                    '배당락전일종가': prices['before_price'],
-                    '배당락일종가': prices['on_price'],
+                    '전일가': prices['before_price'],
+                    '당일가': prices['on_price'],
                 }
                 dividend_history.append(record)
         
@@ -147,8 +147,8 @@ if __name__ == "__main__":
             if final_history: has_history_changed = True
         else:
             final_history = existing_data.get('dividendHistory', [])
-            existing_dates = {item['배당락일'] for item in final_history}
-            new_entries_to_add = [item for item in new_dividend_history if item['배당락일'] not in existing_dates]
+            existing_dates = {item['배당락'] for item in final_history}
+            new_entries_to_add = [item for item in new_dividend_history if item['배당락'] not in existing_dates]
             
             if new_entries_to_add:
                 has_history_changed = True
@@ -156,13 +156,13 @@ if __name__ == "__main__":
                 final_history.extend(new_entries_to_add)
 
             enriched_count = 0
-            new_dividends_map = {item['배당락일']: item for item in new_dividend_history}
+            new_dividends_map = {item['배당락']: item for item in new_dividend_history}
             for item in final_history:
-                if item.get('배당락전일종가', 'N/A') == 'N/A' and item['배당락일'] in new_dividends_map:
-                    new_info_item = new_dividends_map[item['배당락일']]
+                if item.get('전일가', 'N/A') == 'N/A' and item['배당락'] in new_dividends_map:
+                    new_info_item = new_dividends_map[item['배당락']]
                     item.update({
-                        '배당락전일종가': new_info_item.get('배당락전일종가', 'N/A'),
-                        '배당락일종가': new_info_item.get('배당락일종가', 'N/A'),
+                        '전일가': new_info_item.get('전일가', 'N/A'),
+                        '당일가': new_info_item.get('당일가', 'N/A'),
                     })
                     has_history_changed = True
                     enriched_count += 1
@@ -170,7 +170,7 @@ if __name__ == "__main__":
                 print(f"  -> Enriched {enriched_count} entries with price data for {ticker}.")
         
         if should_update_ticker_info or has_history_changed:
-            final_history.sort(key=lambda x: datetime.strptime(x['배당락일'], '%y. %m. %d'), reverse=True)
+            final_history.sort(key=lambda x: datetime.strptime(x['배당락'], '%y. %m. %d'), reverse=True)
             final_data_to_save = {"tickerInfo": final_ticker_info, "dividendHistory": final_history}
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(final_data_to_save, f, ensure_ascii=False, indent=2)

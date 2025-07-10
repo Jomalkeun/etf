@@ -73,7 +73,7 @@ const fetchData = async (tickerName) => {
         tickerInfo.value = responseData.tickerInfo;
 
         const sortedHistory = responseData.dividendHistory.sort((a, b) =>
-            parseYYMMDD(b['배당락일']) - parseYYMMDD(a['배당락일'])
+            parseYYMMDD(b['배당락']) - parseYYMMDD(a['배당락'])
         );
         dividendHistory.value = sortedHistory;
 
@@ -87,7 +87,7 @@ const fetchData = async (tickerName) => {
 
 const generateDynamicTimeRangeOptions = () => {
     if (dividendHistory.value.length === 0) return;
-    const oldestRecordDate = parseYYMMDD(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
+    const oldestRecordDate = parseYYMMDD(dividendHistory.value[dividendHistory.value.length - 1]['배당락']);
     const now = new Date();
     const options = [];
     const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth() - 3));
@@ -128,7 +128,7 @@ const chartDisplayData = computed(() => {
         cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - rangeValue));
     }
 
-    const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락일']) >= cutoffDate);
+    const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락']) >= cutoffDate);
     return filteredData.reverse();
 });
 
@@ -152,7 +152,7 @@ const setChartDataAndOptions = (data, frequency) => {
 
     if (frequency === 'Weekly' && !isPriceChartMode.value) {
         const monthlyAggregated = data.reduce((acc, item) => {
-            const date = parseYYMMDD(item['배당락일']);
+            const date = parseYYMMDD(item['배당락']);
             if (!date) return acc;
             const yearMonth = `${date.getFullYear().toString().slice(-2)}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item['배당금']?.replace('$', '') || 0);
@@ -245,12 +245,12 @@ const setChartDataAndOptions = (data, frequency) => {
         };
 
     } else {
-        const prices = data.flatMap(item => [parseFloat(item['배당락전일종가']?.replace('$', '')), parseFloat(item['배당락일종가']?.replace('$', ''))]).filter(p => !isNaN(p));
+        const prices = data.flatMap(item => [parseFloat(item['전일가']?.replace('$', '')), parseFloat(item['당일가']?.replace('$', ''))]).filter(p => !isNaN(p));
         const priceMin = prices.length > 0 ? Math.min(...prices) * 0.98 : 0;
         const priceMax = prices.length > 0 ? Math.max(...prices) * 1.02 : 1;
 
         chartData.value = {
-            labels: data.map(item => item['배당락일']),
+            labels: data.map(item => item['배당락']),
             datasets: [
                 {
                     type: 'bar', label: '배당금', yAxisID: 'y', order: 2,
@@ -259,16 +259,16 @@ const setChartDataAndOptions = (data, frequency) => {
                     datalabels: { display: true, anchor: 'end', align: 'end', color: textColor, formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null, font: { size: individualLabelSize } }
                 },
                 {
-                    type: 'line', label: '배당락전일종가', yAxisID: 'y1', order: 1,
+                    type: 'line', label: '전일가', yAxisID: 'y1', order: 1,
                     borderColor: documentStyle.getPropertyValue(shuffledColors[1]),
-                    data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
+                    data: data.map(item => parseFloat(item['전일가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
                     datalabels: { display: true, align: 'top', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: lineLabelSize } }
                 },
                 {
-                    type: 'line', label: '배당락일종가', yAxisID: 'y1', order: 1,
+                    type: 'line', label: '당일가', yAxisID: 'y1', order: 1,
                     borderColor: documentStyle.getPropertyValue(shuffledColors[2]),
-                    data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
+                    data: data.map(item => parseFloat(item['당일가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
                     datalabels: { display: true, align: 'bottom', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: lineLabelSize } }
                 }
