@@ -502,6 +502,26 @@
             "company": "GraniteShares",
             "frequency": "Weekly",
             "group": "목요일"
+        },
+        {
+            "name": "GPIQ",
+            "company": "Goldman Sachs",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "QQQI",
+            "company": "Neos",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "QYLD",
+            "company": "Global X",
+            "frequency": "Monthly"
+        },
+        {
+            "name": "DGRW",
+            "company": "WisdomTree, Inc.",
+            "frequency": "Monthly"
         }
     ]
 }
