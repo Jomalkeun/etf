@@ -103,8 +103,17 @@ const setChartDataAndOptions = (data, frequency) => {
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-    // --- Weekly ETF의 배당금 차트 모드 (핵심 수정) ---
+    // --- 2. 대비가 좋은 색상 프리셋 ---
+    const colorPresets = [
+        '--p-cyan-400', '--p-orange-400', '--p-purple-400', 
+        '--p-green-400', '--p-red-400', '--p-blue-400'
+    ];
+    // 색상을 랜덤하게 섞어서 매번 다른 느낌을 줌
+    const shuffledColors = [...colorPresets].sort(() => 0.5 - Math.random());
+    
+    // --- Weekly ETF의 배당금 차트 모드 ---
     if (frequency === 'Weekly' && !isPriceChartMode.value) {
+        // ... (monthlyAggregated, labels, weekColors 등 이전 로직은 동일)
         const monthlyAggregated = data.reduce((acc, item) => {
             const date = parseYYMMDD(item['배당락일']);
             if (!date) return acc;
@@ -119,7 +128,6 @@ const setChartDataAndOptions = (data, frequency) => {
             acc[yearMonth].total += amount;
             return acc;
         }, {});
-
         const labels = Object.keys(monthlyAggregated);
         const weekColors = {
             1: 'rgba(54, 162, 235, 0.8)', 2: 'rgba(255, 99, 132, 0.8)',
@@ -142,7 +150,7 @@ const setChartDataAndOptions = (data, frequency) => {
                 anchor: 'center'
             }
         }));
-
+        
         // 2. 총합 표시를 위한 '투명한' 데이터셋 추가
         datasets.push({
             type: 'bar',
@@ -203,16 +211,25 @@ const setChartDataAndOptions = (data, frequency) => {
             },
             scales: {
                 x: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-                y: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } }
+                y: { 
+                    stacked: true, 
+                    ticks: { color: textColorSecondary }, 
+                    grid: { color: surfaceBorder },
+                    // --- 3. Total 라벨 이탈 문제 해결 ---
+                    // Y축 최대값을 데이터 최대값보다 15% 높게 설정하여 라벨 공간 확보
+                    afterDataLimits: (axis) => {
+                        axis.max = axis.max * 1.15;
+                    }
+                }
             }
         };
 
-    } else {
+    } else { // --- Monthly 또는 Weekly의 주가 차트 모드 ---
         const prices = data.flatMap(item => [
             parseFloat(item['배당락전일종가']?.replace('$', '')),
             parseFloat(item['배당락일종가']?.replace('$', ''))
         ]).filter(p => !isNaN(p));
-
+        
         const priceMin = prices.length > 0 ? Math.min(...prices) * 0.98 : 0;
         const priceMax = prices.length > 0 ? Math.max(...prices) * 1.02 : 1;
 
@@ -221,24 +238,41 @@ const setChartDataAndOptions = (data, frequency) => {
             datasets: [
                 {
                     type: 'bar', label: '배당금', yAxisID: 'y', order: 2,
-                    backgroundColor: documentStyle.getPropertyValue('--p-cyan-400'),
+                    backgroundColor: documentStyle.getPropertyValue(shuffledColors[0]), // 랜덤 색상 적용
                     data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
                     datalabels: {
+                        display: true, // 항상 표시
                         anchor: 'end', align: 'end', color: textColor,
                         formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null
                     }
                 },
                 {
                     type: 'line', label: '배당락전일종가', yAxisID: 'y1', order: 1,
-                    borderColor: documentStyle.getPropertyValue('--p-orange-500'),
+                    borderColor: documentStyle.getPropertyValue(shuffledColors[1]), // 랜덤 색상 적용
                     data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
+                    // --- 1. 라인 차트 데이터 라벨 추가 ---
+                    datalabels: {
+                        display: true,
+                        align: 'top',
+                        color: textColor,
+                        formatter: (value) => value ? `$${value.toFixed(2)}` : null,
+                        font: { size: 10 }
+                    }
                 },
                 {
                     type: 'line', label: '배당락일종가', yAxisID: 'y1', order: 1,
-                    borderColor: documentStyle.getPropertyValue('--p-gray-500'),
+                    borderColor: documentStyle.getPropertyValue(shuffledColors[2]), // 랜덤 색상 적용
                     data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
+                    // --- 1. 라인 차트 데이터 라벨 추가 ---
+                    datalabels: {
+                        display: true,
+                        align: 'bottom',
+                        color: textColor,
+                        formatter: (value) => value ? `$${value.toFixed(2)}` : null,
+                        font: { size: 10 }
+                    }
                 }
             ]
         };
@@ -246,9 +280,11 @@ const setChartDataAndOptions = (data, frequency) => {
             maintainAspectRatio: false,
             aspectRatio: 0.6,
             plugins: {
-                legend: { labels: { color: textColor } },
-                // legend: { display: false },
-                datalabels: { display: context => context.dataset.type === 'bar' }
+                legend: { display: false },
+                datalabels: { 
+                    // 이제 각 데이터셋에서 라벨 표시 여부를 제어하므로, 여기서는 기본 비활성화
+                    display: false
+                }
             },
             scales: {
                 x: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
@@ -385,7 +421,7 @@ const stats = computed(() => {
             <Panel>
                 <template #header>
                     <div class="flex justify-between items-center gap-2">
-                        <div v-if="tickerInfo?.지급주기 === 'Weekly'">
+                        <div v-if="tickerInfo?.frequency === 'Weekly'">
                             <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트"
                                 onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
                         </div>
