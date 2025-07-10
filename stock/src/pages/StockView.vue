@@ -1,9 +1,8 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { joinURL } from 'ufo';
 
-// PrimeVue 컴포넌트
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -11,19 +10,17 @@ import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
 import Panel from 'primevue/panel';
 import Card from 'primevue/card';
-import PrimeVueChart from 'primevue/chart'; // PrimeVue의 차트 컴포넌트
+import PrimeVueChart from 'primevue/chart';
 
-// Chart.js 라이브러리 및 플러그인
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, BarController, LineController } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import Hammer from 'hammerjs'; // Hammer.js는 여기에 딱 한 번만!
+import Hammer from 'hammerjs';
 
-// Chart.js에 모든 요소와 플러그인을 한 번에 등록
 ChartJS.register(
-    Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
-    PointElement, LineElement, BarController, LineController,
-    ChartDataLabels, zoomPlugin
+  Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, 
+  PointElement, LineElement, BarController, LineController, 
+  ChartDataLabels, zoomPlugin
 );
 
 const route = useRoute();
@@ -35,9 +32,22 @@ const error = ref(null);
 const timeRangeOptions = ref([]);
 const selectedTimeRange = ref('1Y');
 const isPriceChartMode = ref(false);
+const isDesktop = ref(window.innerWidth >= 768);
 
 const chartData = ref();
 const chartOptions = ref();
+
+const onResize = () => {
+  isDesktop.value = window.innerWidth >= 768;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', onResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize);
+});
 
 const parseYYMMDD = (dateStr) => {
     if (!dateStr || typeof dateStr !== 'string') return null;
@@ -89,7 +99,7 @@ const generateDynamicTimeRangeOptions = () => {
     if (oldestRecordDate < sixMonthsAgo) options.push('6M');
     if (oldestRecordDate < nineMonthsAgo) options.push('9M');
     if (oldestRecordDate < oneYearAgo) options.push('1Y');
-
+    
     options.push('Max');
     timeRangeOptions.value = options;
 
@@ -128,12 +138,13 @@ const setChartDataAndOptions = (data, frequency) => {
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-    const colorPresets = [
-        '--p-cyan-400', '--p-orange-400', '--p-purple-400',
-        '--p-green-400', '--p-red-400', '--p-blue-400'
-    ];
-    const shuffledColors = [...colorPresets].sort(() => 0.5 - Math.random());
+    const individualLabelSize = isDesktop.value ? 12 : 10;
+    const totalLabelSize = isDesktop.value ? 14 : 12;
+    const lineLabelSize = isDesktop.value ? 11 : 9;
 
+    const colorPresets = ['--p-cyan-400', '--p-orange-400', '--p-purple-400', '--p-green-400', '--p-red-400', '--p-blue-400'];
+    const shuffledColors = [...colorPresets].sort(() => 0.5 - Math.random());
+    
     const zoomOptions = {
         pan: { enabled: true, mode: 'x' },
         zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
@@ -154,28 +165,19 @@ const setChartDataAndOptions = (data, frequency) => {
 
         const labels = Object.keys(monthlyAggregated);
         const weekColors = { 1: '#3B82F6', 2: '#EF4444', 3: '#F59E0B', 4: '#10B981', 5: '#F97316' };
-
-        // 1. 모든 주차 라벨은 이제 항상 표시됩니다.
+        
         const datasets = [1, 2, 3, 4, 5].map(week => ({
-            type: 'bar',
-            label: `${week}주차`,
-            backgroundColor: weekColors[week],
+            type: 'bar', label: `${week}주차`, backgroundColor: weekColors[week],
             data: labels.map(label => monthlyAggregated[label][week] || 0),
             datalabels: {
                 display: context => context.dataset.data[context.dataIndex] > 0.0001,
-                formatter: (value) => `$${value.toFixed(4)}`,
-                color: '#fff',
-                font: { size: 10, weight: 'bold' },
-                align: 'center',
-                anchor: 'center'
+                formatter: (value) => `$${value.toFixed(4)}`, color: '#fff',
+                font: { size: individualLabelSize, weight: 'bold' }, align: 'center', anchor: 'center'
             }
         }));
-
-        // 2. Total 라벨용 가상 데이터셋은 그대로 사용합니다.
+        
         datasets.push({
-            type: 'bar',
-            label: 'Total',
-            data: new Array(labels.length).fill(0),
+            type: 'bar', label: 'Total', data: new Array(labels.length).fill(0),
             backgroundColor: 'transparent',
             datalabels: {
                 display: true,
@@ -183,56 +185,31 @@ const setChartDataAndOptions = (data, frequency) => {
                     const total = monthlyAggregated[context.chart.data.labels[context.dataIndex]]?.total || 0;
                     return total > 0 ? `$${total.toFixed(4)}` : '';
                 },
-                color: textColor,
-                anchor: 'end',
-                align: 'end',
-                offset: 0,
-                padding: { top: 2, bottom: 2 },
-                backgroundColor: 'black',
-                color: 'white',
-                font: { size: 15, weight: 'bold' }
+                color: textColor, anchor: 'end', align: 'end',
+                offset: -8, font: { size: totalLabelSize, weight: 'bold' }
             }
         });
 
         chartData.value = { labels, datasets };
-
-        // 3. Y축 최대값 계산 로직도 그대로 유지합니다.
+        
         const maxTotal = Math.max(...Object.values(monthlyAggregated).map(m => m.total));
-        const yAxisMax = maxTotal * 1.25; // 여백을 25%로 더 넉넉하게 조정
+        const yAxisMax = maxTotal * 1.25;
 
-                chartOptions.value = {
-            maintainAspectRatio: false,
-            aspectRatio: 0.8,
+        chartOptions.value = {
+            maintainAspectRatio: false, aspectRatio: 0.8,
             plugins: {
                 title: { display: false },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    // 1. 툴팁에 표시될 항목들을 필터링합니다.
-                    filter: function (tooltipItem) {
-                        // 'Total' 데이터셋은 툴팁에서 제외하고, 값이 0인 항목도 제외합니다.
-                        return tooltipItem.dataset.label !== 'Total' && tooltipItem.parsed.y > 0;
-                    },
-                    callbacks: {
-                        // 2. 이제 label 콜백은 필요 없습니다. 필터링된 항목들이 자동으로 표시됩니다.
-                        // footer 콜백은 월별 총합을 계산하기 위해 그대로 둡니다.
-                        footer: (tooltipItems) => {
-                            let sum = tooltipItems.reduce((a, b) => a + b.parsed.y, 0);
-                            return 'Total: $' + sum.toFixed(4);
-                        },
-                    },
-                },
+                tooltip: { mode: 'index', intersect: false, callbacks: {
+                    filter: (item) => item.dataset.label !== 'Total' && item.parsed.y > 0,
+                    footer: (items) => 'Total: $' + items.reduce((a, b) => a + b.parsed.y, 0).toFixed(4),
+                }},
                 legend: { display: false },
-                datalabels: { display: true }
+                datalabels: { display: true },
+                zoom: zoomOptions
             },
             scales: {
                 x: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-                y: {
-                    stacked: true,
-                    ticks: { color: textColorSecondary },
-                    grid: { color: surfaceBorder },
-                    max: yAxisMax
-                }
+                y: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder }, max: yAxisMax }
             }
         };
 
@@ -248,21 +225,21 @@ const setChartDataAndOptions = (data, frequency) => {
                     type: 'bar', label: '배당금', yAxisID: 'y', order: 2,
                     backgroundColor: documentStyle.getPropertyValue(shuffledColors[0]),
                     data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
-                    datalabels: { display: true, anchor: 'end', align: 'end', color: textColor, formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null }
+                    datalabels: { display: true, anchor: 'end', align: 'end', color: textColor, formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null, font: { size: individualLabelSize } }
                 },
                 {
                     type: 'line', label: '배당락전일종가', yAxisID: 'y1', order: 1,
                     borderColor: documentStyle.getPropertyValue(shuffledColors[1]),
                     data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
-                    datalabels: { display: true, align: 'top', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: 10 } }
+                    datalabels: { display: true, align: 'top', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: lineLabelSize } }
                 },
                 {
                     type: 'line', label: '배당락일종가', yAxisID: 'y1', order: 1,
                     borderColor: documentStyle.getPropertyValue(shuffledColors[2]),
                     data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
-                    datalabels: { display: true, align: 'bottom', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: 10 } }
+                    datalabels: { display: true, align: 'bottom', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: lineLabelSize } }
                 }
             ]
         };
@@ -271,7 +248,13 @@ const setChartDataAndOptions = (data, frequency) => {
             plugins: {
                 legend: { display: false },
                 datalabels: { display: false },
-                tooltip: { mode: 'index', intersect: false },
+                tooltip: { mode: 'index', intersect: false, callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (context.parsed.y !== null) { label += `: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y)}`; }
+                        return label;
+                    }
+                }},
                 zoom: zoomOptions
             },
             scales: {
@@ -294,7 +277,7 @@ watch(() => route.params.ticker, (newTicker) => {
     }
 }, { immediate: true });
 
-watch([chartDisplayData, isPriceChartMode], ([newData, newMode]) => {
+watch([chartDisplayData, isPriceChartMode, isDesktop], ([newData, newMode, newDesktop]) => {
     if (newData && newData.length > 0 && tickerInfo.value) {
         setChartDataAndOptions(newData, tickerInfo.value.frequency);
     } else {
@@ -304,18 +287,18 @@ watch([chartDisplayData, isPriceChartMode], ([newData, newMode]) => {
 }, { deep: true, immediate: true });
 
 const stats = computed(() => {
-    if (!tickerInfo.value) {
-        return [
-            { title: "시가총액", value: "..." }, { title: "52주", value: "..." },
-            { title: "NAV", value: "..." }, { title: "Total Return", value: "..." },
-        ];
-    }
+  if (!tickerInfo.value) {
     return [
-        { title: "시가총액", value: tickerInfo.value.Volume },
-        { title: "52주", value: tickerInfo.value['52Week'] },
-        { title: "NAV", value: tickerInfo.value.NAV },
-        { title: "Total Return", value: tickerInfo.value.TotalReturn },
+        { title: "시가총액", value: "..." }, { title: "52주", value: "..." },
+        { title: "NAV", value: "..." }, { title: "Total Return", value: "..." },
     ];
+  }
+  return [
+    { title: "시가총액", value: tickerInfo.value.Volume },
+    { title: "52주", value: tickerInfo.value['52Week'] },
+    { title: "NAV", value: tickerInfo.value.NAV },
+    { title: "Total Return", value: tickerInfo.value.TotalReturn },
+  ];
 });
 
 </script>
