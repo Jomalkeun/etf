@@ -195,17 +195,48 @@ const setChartDataAndOptions = (data, frequency) => {
         const maxTotal = Math.max(...Object.values(monthlyAggregated).map(m => m.total));
         const yAxisMax = maxTotal * 1.25;
 
-        chartOptions.value = {
-            maintainAspectRatio: false, aspectRatio: 0.8,
+                chartOptions.value = {
+            maintainAspectRatio: false,
+            aspectRatio: 0.8,
             plugins: {
                 title: { display: false },
-                tooltip: { mode: 'index', intersect: false, callbacks: {
-                    filter: (item) => item.dataset.label !== 'Total' && item.parsed.y > 0,
-                    footer: (items) => 'Total: $' + items.reduce((a, b) => a + b.parsed.y, 0).toFixed(4),
-                }},
                 legend: { display: false },
                 datalabels: { display: true },
-                zoom: zoomOptions
+                zoom: zoomOptions,
+                
+                // --- 바로 이 부분이 모든 것을 해결합니다 ---
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        // 1. label 콜백을 사용하여, 0이 아닌 값만 예쁘게 포매팅합니다.
+                        label: function(context) {
+                            // 'Total' 데이터셋은 툴팁에 아무것도 표시하지 않습니다.
+                            if (context.dataset.label === 'Total') {
+                                return null;
+                            }
+                            
+                            let label = context.dataset.label || '';
+                            const value = context.parsed.y;
+
+                            // 값이 0보다 클 때만 툴팁에 라인을 추가합니다.
+                            if (value > 0) {
+                                label += `: $${value.toFixed(4)}`;
+                                return label;
+                            }
+                            
+                            // 값이 0이거나 null이면 툴팁에서 이 라인을 완전히 제거합니다.
+                            return null;
+                        },
+
+                        // 2. footer 콜백은 이제 툴팁에 표시된 항목들(filtered items)만을 기준으로 총합을 계산합니다.
+                        footer: (tooltipItems) => {
+                            // tooltipItems에는 이미 0인 값과 'Total' 데이터셋이 필터링되어 들어옵니다.
+                            let sum = tooltipItems.reduce((a, b) => a + b.parsed.y, 0);
+                            return 'Total: $' + sum.toFixed(4);
+                        },
+                    }
+                }
             },
             scales: {
                 x: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
