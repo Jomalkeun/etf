@@ -131,14 +131,14 @@ if __name__ == "__main__":
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     existing_data = json.load(f)
-                    print(f"  -> Found existing data for {ticker}.")
+                    # print(f"  -> Found existing data for {ticker}.")
             except Exception as e:
                 print(f"  -> Warning: Could not read existing file for {ticker}. Error: {e}")
 
         # --- 2. yfinance로 새로운 데이터 스크래핑 ---
         new_scraped_data = scrape_with_yfinance(ticker, info['company'], info['frequency'], info['group'])
         if not new_scraped_data:
-            print(f"  -> No data scraped from yfinance for {ticker}. Skipping update.")
+            # print(f"  -> No data scraped from yfinance for {ticker}. Skipping update.")
             continue
             
         new_ticker_info = new_scraped_data.get('tickerInfo', {})
