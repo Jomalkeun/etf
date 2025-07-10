@@ -117,7 +117,7 @@ if __name__ == "__main__":
                     if update_str:
                         # KST 정보를 제거하고 파싱해야 함
                         last_update_time = datetime.strptime(update_str.replace(' KST', ''), '%Y-%m-%d %H:%M:%S')
-                    print(f"  -> Found existing data for {ticker}. Last update: {update_str}")
+                    # print(f"  -> Found existing data for {ticker}. Last update: {update_str}")
             except Exception as e:
                 print(f"  -> Warning: Could not read existing file for {ticker}. Error: {e}")
         
@@ -129,7 +129,7 @@ if __name__ == "__main__":
             # 시간대 정보가 없는 naive datetime 끼리 비교
             if now_kst.replace(tzinfo=None) - last_update_time < timedelta(hours=23):
                 should_update_ticker_info = False
-                print(f"  -> Ticker info for {ticker} was updated recently. Skipping info update.")
+                # print(f"  -> Ticker info for {ticker} was updated recently. Skipping info update.")
 
         new_scraped_data = scrape_with_yfinance(ticker, info['company'], info['frequency'], info['group'])
         if not new_scraped_data: continue
@@ -176,8 +176,8 @@ if __name__ == "__main__":
                 json.dump(final_data_to_save, f, ensure_ascii=False, indent=2)
             print(f" => UPDATED and saved data for {ticker} to {file_path}")
             total_changed_files += 1
-        else:
-            print(f"  -> No changes detected for {ticker}. Skipping file write.")
+        # else:
+        #     print(f"  -> No changes detected for {ticker}. Skipping file write.")
             
         time.sleep(1)
 
