@@ -3,14 +3,28 @@ import { ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { joinURL } from 'ufo';
 
+// PrimeVue 컴포넌트
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import ProgressSpinner from 'primevue/progressspinner';
 import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
-import Chart from 'primevue/chart';
 import Panel from 'primevue/panel';
+import Card from 'primevue/card';
+import PrimeVueChart from 'primevue/chart'; // PrimeVue의 차트 컴포넌트
+
+// Chart.js 라이브러리 및 플러그인
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, BarController, LineController } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import Hammer from 'hammerjs'; // Hammer.js는 여기에 딱 한 번만!
+
+// Chart.js에 모든 요소와 플러그인을 한 번에 등록
+ChartJS.register(
+    Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
+    PointElement, LineElement, BarController, LineController,
+    ChartDataLabels, zoomPlugin
+);
 
 const route = useRoute();
 const tickerInfo = ref(null);
@@ -66,19 +80,21 @@ const generateDynamicTimeRangeOptions = () => {
     const oldestRecordDate = parseYYMMDD(dividendHistory.value[dividendHistory.value.length - 1]['배당락일']);
     const now = new Date();
     const options = [];
+    const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth() - 3));
+    const sixMonthsAgo = new Date(new Date().setMonth(now.getMonth() - 6));
+    const nineMonthsAgo = new Date(new Date().setMonth(now.getMonth() - 9));
     const oneYearAgo = new Date(new Date().setFullYear(now.getFullYear() - 1));
-    const twoYearsAgo = new Date(new Date().setFullYear(now.getFullYear() - 2));
-    const threeYearsAgo = new Date(new Date().setFullYear(now.getFullYear() - 3));
 
+    if (oldestRecordDate < threeMonthsAgo) options.push('3M');
+    if (oldestRecordDate < sixMonthsAgo) options.push('6M');
+    if (oldestRecordDate < nineMonthsAgo) options.push('9M');
     if (oldestRecordDate < oneYearAgo) options.push('1Y');
-    if (oldestRecordDate < twoYearsAgo) options.push('2Y');
-    if (oldestRecordDate < threeYearsAgo) options.push('3Y');
 
     options.push('Max');
     timeRangeOptions.value = options;
 
     if (!options.includes(selectedTimeRange.value)) {
-        selectedTimeRange.value = options[0] || 'Max';
+        selectedTimeRange.value = options[options.length - 2] || 'Max';
     }
 };
 
@@ -90,9 +106,18 @@ const columns = computed(() => {
 const chartDisplayData = computed(() => {
     if (dividendHistory.value.length === 0) return [];
     if (selectedTimeRange.value === 'Max') return [...dividendHistory.value].reverse();
+
     const now = new Date();
-    const years = parseInt(selectedTimeRange.value.replace('Y', ''), 10);
-    const cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - years));
+    const rangeValue = parseInt(selectedTimeRange.value);
+    const rangeUnit = selectedTimeRange.value.slice(-1);
+    let cutoffDate;
+
+    if (rangeUnit === 'M') {
+        cutoffDate = new Date(new Date().setMonth(now.getMonth() - rangeValue));
+    } else {
+        cutoffDate = new Date(new Date().setFullYear(now.getFullYear() - rangeValue));
+    }
+
     const filteredData = dividendHistory.value.filter(item => parseYYMMDD(item['배당락일']) >= cutoffDate);
     return filteredData.reverse();
 });
@@ -103,133 +128,116 @@ const setChartDataAndOptions = (data, frequency) => {
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-    // --- 2. 대비가 좋은 색상 프리셋 ---
     const colorPresets = [
-        '--p-cyan-400', '--p-orange-400', '--p-purple-400', 
+        '--p-cyan-400', '--p-orange-400', '--p-purple-400',
         '--p-green-400', '--p-red-400', '--p-blue-400'
     ];
-    // 색상을 랜덤하게 섞어서 매번 다른 느낌을 줌
     const shuffledColors = [...colorPresets].sort(() => 0.5 - Math.random());
-    
-    // --- Weekly ETF의 배당금 차트 모드 ---
+
+    const zoomOptions = {
+        pan: { enabled: true, mode: 'x' },
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+    };
+
     if (frequency === 'Weekly' && !isPriceChartMode.value) {
-        // ... (monthlyAggregated, labels, weekColors 등 이전 로직은 동일)
         const monthlyAggregated = data.reduce((acc, item) => {
             const date = parseYYMMDD(item['배당락일']);
             if (!date) return acc;
             const yearMonth = `${date.getFullYear().toString().slice(-2)}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item['배당금']?.replace('$', '') || 0);
             const weekOfMonth = Math.floor((date.getDate() - 1) / 7) + 1;
-
-            if (!acc[yearMonth]) {
-                acc[yearMonth] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, total: 0 };
-            }
+            if (!acc[yearMonth]) { acc[yearMonth] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, total: 0 }; }
             acc[yearMonth][weekOfMonth] += amount;
             acc[yearMonth].total += amount;
             return acc;
         }, {});
-        const labels = Object.keys(monthlyAggregated);
-        const weekColors = {
-            1: 'rgba(54, 162, 235, 0.8)', 2: 'rgba(255, 99, 132, 0.8)',
-            3: 'rgba(255, 206, 86, 0.8)', 4: 'rgba(75, 192, 192, 0.8)',
-            5: 'rgba(255, 159, 64, 0.8)',
-        };
 
-        // 1. 주차별 데이터셋 생성 (개별 라벨 포함)
+        const labels = Object.keys(monthlyAggregated);
+        const weekColors = { 1: '#3B82F6', 2: '#EF4444', 3: '#F59E0B', 4: '#10B981', 5: '#F97316' };
+
+        // 1. 모든 주차 라벨은 이제 항상 표시됩니다.
         const datasets = [1, 2, 3, 4, 5].map(week => ({
             type: 'bar',
             label: `${week}주차`,
             backgroundColor: weekColors[week],
-            data: labels.map(label => monthlyAggregated[label][week]),
+            data: labels.map(label => monthlyAggregated[label][week] || 0),
             datalabels: {
                 display: context => context.dataset.data[context.dataIndex] > 0.0001,
                 formatter: (value) => `$${value.toFixed(4)}`,
                 color: '#fff',
-                font: { size: 15, weight: 'bold' },
+                font: { size: 10, weight: 'bold' },
                 align: 'center',
                 anchor: 'center'
             }
         }));
-        
-        // 2. 총합 표시를 위한 '투명한' 데이터셋 추가
+
+        // 2. Total 라벨용 가상 데이터셋은 그대로 사용합니다.
         datasets.push({
             type: 'bar',
             label: 'Total',
-            data: new Array(labels.length).fill(0), // 높이가 0인 막대
+            data: new Array(labels.length).fill(0),
             backgroundColor: 'transparent',
             datalabels: {
                 display: true,
                 formatter: (value, context) => {
-                    const monthLabel = context.chart.data.labels[context.dataIndex];
-                    const total = monthlyAggregated[monthLabel]?.total || 0;
+                    const total = monthlyAggregated[context.chart.data.labels[context.dataIndex]]?.total || 0;
                     return total > 0 ? `$${total.toFixed(4)}` : '';
                 },
                 color: textColor,
                 anchor: 'end',
                 align: 'end',
-                offset: 10, // 막대 상단에서 약간 위로 띄움
+                offset: 0,
+                padding: { top: 2, bottom: 2 },
+                backgroundColor: 'black',
+                color: 'white',
                 font: { size: 15, weight: 'bold' }
             }
         });
 
         chartData.value = { labels, datasets };
-        chartOptions.value = {
+
+        // 3. Y축 최대값 계산 로직도 그대로 유지합니다.
+        const maxTotal = Math.max(...Object.values(monthlyAggregated).map(m => m.total));
+        const yAxisMax = maxTotal * 1.25; // 여백을 25%로 더 넉넉하게 조정
+
+                chartOptions.value = {
             maintainAspectRatio: false,
             aspectRatio: 0.8,
             plugins: {
-                // title: { display: true, text: '월별 주차 배당금 누적' },
                 title: { display: false },
                 tooltip: {
                     mode: 'index',
+                    intersect: false,
+                    // 1. 툴팁에 표시될 항목들을 필터링합니다.
+                    filter: function (tooltipItem) {
+                        // 'Total' 데이터셋은 툴팁에서 제외하고, 값이 0인 항목도 제외합니다.
+                        return tooltipItem.dataset.label !== 'Total' && tooltipItem.parsed.y > 0;
+                    },
                     callbacks: {
-                        label: function (context) {
-                            if (context.dataset.label === 'Total') return null; // Total 툴팁은 숨김
-                            let label = context.dataset.label || '';
-                            if (context.parsed.y > 0) {
-                                label += `: $${context.parsed.y.toFixed(4)}`;
-                            } else {
-                                return null;
-                            }
-                            return label;
-                        },
+                        // 2. 이제 label 콜백은 필요 없습니다. 필터링된 항목들이 자동으로 표시됩니다.
+                        // footer 콜백은 월별 총합을 계산하기 위해 그대로 둡니다.
                         footer: (tooltipItems) => {
                             let sum = tooltipItems.reduce((a, b) => a + b.parsed.y, 0);
                             return 'Total: $' + sum.toFixed(4);
                         },
                     },
                 },
-                legend: {
-                    display: false
-                },
-                // legend: {
-                //     labels: {
-                //         color: textColor,
-                //         filter: (item) => item.datasetIndex < 5 // Total 범례 숨김
-                //     }
-                // },
+                legend: { display: false },
                 datalabels: { display: true }
             },
             scales: {
                 x: { stacked: true, ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-                y: { 
-                    stacked: true, 
-                    ticks: { color: textColorSecondary }, 
+                y: {
+                    stacked: true,
+                    ticks: { color: textColorSecondary },
                     grid: { color: surfaceBorder },
-                    // --- 3. Total 라벨 이탈 문제 해결 ---
-                    // Y축 최대값을 데이터 최대값보다 15% 높게 설정하여 라벨 공간 확보
-                    afterDataLimits: (axis) => {
-                        axis.max = axis.max * 1.15;
-                    }
+                    max: yAxisMax
                 }
             }
         };
 
-    } else { // --- Monthly 또는 Weekly의 주가 차트 모드 ---
-        const prices = data.flatMap(item => [
-            parseFloat(item['배당락전일종가']?.replace('$', '')),
-            parseFloat(item['배당락일종가']?.replace('$', ''))
-        ]).filter(p => !isNaN(p));
-        
+    } else {
+        const prices = data.flatMap(item => [parseFloat(item['배당락전일종가']?.replace('$', '')), parseFloat(item['배당락일종가']?.replace('$', ''))]).filter(p => !isNaN(p));
         const priceMin = prices.length > 0 ? Math.min(...prices) * 0.98 : 0;
         const priceMax = prices.length > 0 ? Math.max(...prices) * 1.02 : 1;
 
@@ -238,76 +246,40 @@ const setChartDataAndOptions = (data, frequency) => {
             datasets: [
                 {
                     type: 'bar', label: '배당금', yAxisID: 'y', order: 2,
-                    backgroundColor: documentStyle.getPropertyValue(shuffledColors[0]), // 랜덤 색상 적용
+                    backgroundColor: documentStyle.getPropertyValue(shuffledColors[0]),
                     data: data.map(item => parseFloat(item['배당금']?.replace('$', '') || 0)),
-                    datalabels: {
-                        display: true, // 항상 표시
-                        anchor: 'end', align: 'end', color: textColor,
-                        formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null
-                    }
+                    datalabels: { display: true, anchor: 'end', align: 'end', color: textColor, formatter: (value) => value > 0 ? `$${value.toFixed(2)}` : null }
                 },
                 {
                     type: 'line', label: '배당락전일종가', yAxisID: 'y1', order: 1,
-                    borderColor: documentStyle.getPropertyValue(shuffledColors[1]), // 랜덤 색상 적용
+                    borderColor: documentStyle.getPropertyValue(shuffledColors[1]),
                     data: data.map(item => parseFloat(item['배당락전일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
-                    // --- 1. 라인 차트 데이터 라벨 추가 ---
-                    datalabels: {
-                        display: true,
-                        align: 'top',
-                        color: textColor,
-                        formatter: (value) => value ? `$${value.toFixed(2)}` : null,
-                        font: { size: 10 }
-                    }
+                    datalabels: { display: true, align: 'top', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: 10 } }
                 },
                 {
                     type: 'line', label: '배당락일종가', yAxisID: 'y1', order: 1,
-                    borderColor: documentStyle.getPropertyValue(shuffledColors[2]), // 랜덤 색상 적용
+                    borderColor: documentStyle.getPropertyValue(shuffledColors[2]),
                     data: data.map(item => parseFloat(item['배당락일종가']?.replace('$', ''))),
                     tension: 0.4, borderWidth: 2, fill: false,
-                    // --- 1. 라인 차트 데이터 라벨 추가 ---
-                    datalabels: {
-                        display: true,
-                        align: 'bottom',
-                        color: textColor,
-                        formatter: (value) => value ? `$${value.toFixed(2)}` : null,
-                        font: { size: 10 }
-                    }
+                    datalabels: { display: true, align: 'bottom', color: textColor, formatter: (value) => value ? `$${value.toFixed(2)}` : null, font: { size: 10 } }
                 }
             ]
         };
         chartOptions.value = {
-            maintainAspectRatio: false,
-            aspectRatio: 0.6,
+            maintainAspectRatio: false, aspectRatio: 0.6,
             plugins: {
                 legend: { display: false },
-                datalabels: { display: false }, // 각 데이터셋에서 개별 제어
-                
-                tooltip: {
-                    mode: 'index', // 'nearest'에서 'index'로 변경
-                    intersect: false, // 마우스가 정확히 포인트에 닿지 않아도 툴팁이 나타나게 함
-                    callbacks: {
-                        // 툴팁의 각 라벨을 더 예쁘게 포매팅
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-                            }
-                            return label
-                        }
-                    }
-                }
+                datalabels: { display: false },
+                tooltip: { mode: 'index', intersect: false },
+                zoom: zoomOptions
             },
             scales: {
                 x: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
                 y: { type: 'linear', display: true, position: 'left', ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
                 y1: {
                     type: 'linear', display: true, position: 'right', min: priceMin, max: priceMax,
-                    ticks: { color: textColorSecondary },
-                    grid: { drawOnChartArea: false, color: surfaceBorder }
+                    ticks: { color: textColorSecondary }, grid: { drawOnChartArea: false, color: surfaceBorder }
                 }
             }
         };
@@ -322,7 +294,7 @@ watch(() => route.params.ticker, (newTicker) => {
     }
 }, { immediate: true });
 
-watch(chartDisplayData, (newData) => {
+watch([chartDisplayData, isPriceChartMode], ([newData, newMode]) => {
     if (newData && newData.length > 0 && tickerInfo.value) {
         setChartDataAndOptions(newData, tickerInfo.value.frequency);
     } else {
@@ -331,70 +303,22 @@ watch(chartDisplayData, (newData) => {
     }
 }, { deep: true, immediate: true });
 
-watch(isPriceChartMode, () => {
-    if (chartDisplayData.value && chartDisplayData.value.length > 0 && tickerInfo.value) {
-        setChartDataAndOptions(chartDisplayData.value, tickerInfo.value.frequency);
-    }
-});
-
-// Breadcrumb 데이터 (수정 없음, 참고용)
-// const home = ref({ icon: 'pi pi-home', route: '/' });
-// const breadcrumbItems = computed(() => {
-//     if (!tickerInfo.value) return [{ label: 'Loading...' }];
-//     return [
-//         { label: tickerInfo.value.company },
-//         { label: tickerInfo.value.name }
-//     ];
-// });
-
-
-// --- stats 배열을 computed 속성으로 변경 (핵심 수정) ---
 const stats = computed(() => {
-  // tickerInfo 데이터가 아직 없으면, 빈 배열이나 기본값 배열을 반환
-  if (!tickerInfo.value) {
+    if (!tickerInfo.value) {
+        return [
+            { title: "시가총액", value: "..." }, { title: "52주", value: "..." },
+            { title: "NAV", value: "..." }, { title: "Total Return", value: "..." },
+        ];
+    }
     return [
-        { title: "시가총액", value: "..." },
-        { title: "52주", value: "..." },
-        { title: "NAV", value: "..." },
-        { title: "Total Return", value: "..." },
+        { title: "시가총액", value: tickerInfo.value.Volume },
+        { title: "52주", value: tickerInfo.value['52Week'] },
+        { title: "NAV", value: tickerInfo.value.NAV },
+        { title: "Total Return", value: tickerInfo.value.TotalReturn },
     ];
-  }
-
-  // tickerInfo 데이터가 준비되면, 실제 값을 사용하여 배열 생성
-  return [
-    {
-        title: "시가총액",
-        value: tickerInfo.value.Volume // 이제 tickerInfo.value는 실제 객체입니다.
-    },
-    {
-        title: "52주",
-        value: tickerInfo.value['52Week'] // 키에 특수문자가 없으므로 .52Week도 가능
-    },
-    {
-        title: "NAV",
-        value: tickerInfo.value.NAV
-    },
-    {
-        title: "Total Return",
-        value: tickerInfo.value.TotalReturn
-    },
-  ];
 });
-</script>
-<!-- 
-    "name": "LFGY",
-    "company": "YieldMax",
-    "frequency": "Weekly",
-    "group": "group A",
-    "Update": "2025-07-08 12:11:09 KST",
-    "52Week": "$30.09 - $55.11",
-    "Volume": "284,000",
-    "AvgVolume": "125,533",
-    "NAV": "$40.15",
-    "Yield": "N/A",
-    "TotalReturn": "N/A"
-     -->
 
+</script>
 
 <template>
     <div class="card">
@@ -408,16 +332,15 @@ const stats = computed(() => {
         </div>
 
         <div v-else-if="tickerInfo && dividendHistory.length > 0" class="flex flex-column gap-5">
-
             <div id="tickerInfo">
                 <div class="tickerInfo__header">
-                    <div class="tickerInfo__brand"> {{ tickerInfo.company }} &middot; {{ tickerInfo.frequency }} &middot; {{ tickerInfo.group }}</div>
-                    <h2 class="tickerInfo__title">{{ tickerInfo.name }} <small>&middot; {{ tickerInfo.fullname }}</small></h2>
+                    <div class="tickerInfo__brand">{{ tickerInfo.company }} · {{ tickerInfo.frequency }} · {{
+                        tickerInfo.group }}</div>
+                    <h2 class="tickerInfo__title">{{ tickerInfo.name }} <small>· {{ tickerInfo.fullname }}</small></h2>
                 </div>
                 <div class="tickerInfo__status">
                     <div class="stats">
                         <div v-for="(stat, index) in stats" :key="index" class="layout-card">
-                            
                             <div class="stats-content">
                                 <div class="stats-value">{{ stat.value }}</div>
                             </div>
@@ -429,26 +352,30 @@ const stats = computed(() => {
                 </div>
             </div>
 
-            <div class="card" id="p-chart">
-                <Chart type="bar" :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" />
-            </div>
-
-            <Panel>
-                <template #header>
-                    <div class="flex justify-between items-center gap-2">
+            <Card>
+                <template #content>
+                    <div class="flex justify-between items-center w-full gap-2 mb-4">
                         <div v-if="tickerInfo?.frequency === 'Weekly'">
-                            <ToggleButton v-model="isPriceChartMode" onLabel="주가 차트" offLabel="배당금 차트"
+                            <ToggleButton v-model="isPriceChartMode" onLabel="주가" offLabel="배당"
                                 onIcon="pi pi-chart-line" offIcon="pi pi-chart-bar" />
                         </div>
                         <div v-else></div>
                         <SelectButton v-model="selectedTimeRange" :options="timeRangeOptions" aria-labelledby="basic" />
                     </div>
+                    <div class="card" id="p-chart" v-if="chartData && chartOptions">
+                        <PrimeVueChart type="bar" :data="chartData" :options="chartOptions" />
+                    </div>
+                    <div v-else class="flex justify-center items-center h-48">
+                        <ProgressSpinner />
+                    </div>
                 </template>
+            </Card>
+
+            <Panel :toggleable="true" header="배당금 상세 정보" :collapsed="true">
                 <template #icons>
-                    <span class="text-surface-500 dark:text-surface-400">{{ tickerInfo.Update }}</span>
+                    <span class="text-surface-500 dark:text-surface-400">Last Update: {{ tickerInfo.Update }}</span>
                 </template>
-                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows scrollable scrollHeight="50vh"
-                    :rows="10" paginator>
+                <DataTable :value="dividendHistory" responsiveLayout="scroll" stripedRows :rows="10" paginator>
                     <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable>
                     </Column>
                 </DataTable>
