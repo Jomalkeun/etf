@@ -101,8 +101,7 @@ if __name__ == "__main__":
     all_tickers_info = {}
     try:
         with open(nav_file_path, 'r', encoding='utf-8') as f:
-            nav_data_json = json.load(f)
-            ticker_list = nav_data_json.get('nav', [])
+            ticker_list = json.load(f).get('nav', [])
             for item in ticker_list:
                 ticker = item.get('name')
                 if ticker:
@@ -113,12 +112,13 @@ if __name__ == "__main__":
                     }
         print(f"Successfully loaded {len(all_tickers_info)} tickers from {nav_file_path}")
     except Exception as e:
+        print(f"An unexpected error occurred while loading {nav_file_path}: {e}")
         exit()
 
     output_dir = 'public/data'
     os.makedirs(output_dir, exist_ok=True)
     
-    print("\n--- Starting All Scrapes with Data Enrichment & Fuzzy Matching ---")
+    print("\n--- Starting All Scrapes with Final Logic ---")
     
     total_changed_files = 0
     
@@ -130,16 +130,10 @@ if __name__ == "__main__":
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     existing_data = json.load(f)
-                    # print(f"  -> Found existing data for {ticker}.")
             except Exception as e:
                 print(f"  -> Warning: Could not read existing file for {ticker}. Error: {e}")
-        
-        new_scraped_data = scrape_with_yfinance(
-            ticker, 
-            info['company'], 
-            info['frequency'], 
-            info['group']
-        )
+
+        new_scraped_data = scrape_with_yfinance(ticker, info['company'], info['frequency'], info['group'])
         if not new_scraped_data:
             # print(f"  -> No data scraped from yfinance for {ticker}. Skipping update.")
             continue
@@ -150,62 +144,56 @@ if __name__ == "__main__":
         has_changed = False
         
         if not existing_data:
-            final_data_to_save = new_scraped_data
-            if new_scraped_data.get('dividendHistory'):
-                has_changed = True
+            final_history = new_dividend_history
+            if final_history: has_changed = True
         else:
             final_history = existing_data.get('dividendHistory', [])
             
-            # --- Ticker Info 변경 감지 ---
-            existing_ticker_info_for_compare = existing_data.get('tickerInfo', {}).copy()
-            existing_ticker_info_for_compare.pop('Update', None)
-            new_ticker_info_for_compare = new_ticker_info.copy()
-            new_ticker_info_for_compare.pop('Update', None)
-            if new_ticker_info_for_compare != existing_ticker_info_for_compare:
+            # 1. Ticker Info가 변경되었는지 확인
+            existing_info_compare = {k: v for k, v in existing_data.get('tickerInfo', {}).items() if k != 'Update'}
+            new_info_compare = {k: v for k, v in new_ticker_info.items() if k != 'Update'}
+            if existing_info_compare != new_info_compare:
                 has_changed = True
                 print(f"  -> Ticker info for {ticker} has changed.")
 
-            # --- 데이터 보강 및 추가 로직 (핵심 수정) ---
-            new_dividends_map = {item['배당락일']: item for item in new_dividend_history}
-            enriched_items_count = 0
-            
-            # 1. 기존 데이터 보강
-            for item in final_history:
-                ex_date = item['배당락일']
-                # 주가 정보가 비어있고, yfinance에 해당 날짜의 데이터가 있다면 보강 시도
-                if item.get('배당락전일종가', 'N/A') == 'N/A' and ex_date in new_dividends_map:
-                    print(f"  -> Enriching data for {ticker} on {ex_date}...")
-                    new_item_info = new_dividends_map[ex_date]
-                    
-                    # 주가 정보만 가져와서 업데이트
-                    item.update({
-                        '배당락전일종가': new_item_info.get('배당락전일종가', 'N/A'),
-                        '배당락일종가': new_item_info.get('배당락일종가', 'N/A'),
-                    })
-                    has_changed = True
-                    enriched_items_count += 1
-            
-            if enriched_items_count > 0:
-                print(f"  -> Enriched {enriched_items_count} existing entries with price data for {ticker}.")
-
-            # 2. 새로운 데이터 추가
+            # 2. 새로운 배당 기록 추가
             existing_dates = {item['배당락일'] for item in final_history}
-            new_entries_to_add = [
-                item for item in new_dividend_history 
-                if item['배당락일'] not in existing_dates
-            ]
+            new_entries_to_add = [item for item in new_dividend_history if item['배당락일'] not in existing_dates]
             if new_entries_to_add:
                 has_changed = True
                 print(f"  -> Found {len(new_entries_to_add)} new dividend entries for {ticker}.")
                 final_history.extend(new_entries_to_add)
-            
-            final_data_to_save = {
-                "tickerInfo": new_ticker_info,
-                "dividendHistory": final_history
-            }
-        
+
+            # 3. 주가 정보 보강 (가장 중요한 로직)
+            enriched_count = 0
+            for item in final_history:
+                # 조건: 주가 정보 필드가 없거나, 'N/A' 값일 때
+                if item.get('배당락전일종가', 'N/A') == 'N/A':
+                    print(f"  -> Attempting to enrich price data for {ticker} on {item['배당락일']}...")
+                    # 배당락일 문자열을 yfinance가 이해하는 형식으로 변환
+                    try:
+                        ex_date_obj = datetime.strptime(item['배당락일'], '%y. %m. %d')
+                        ex_date_for_price = ex_date_obj.strftime('%m/%d/%Y')
+                        
+                        # 주가 정보만 별도로 조회
+                        prices = get_historical_prices(ticker, ex_date_for_price)
+                        
+                        # 주가 정보가 성공적으로 조회되었다면, 기존 항목 업데이트
+                        if prices['before_price'] != 'N/A' or prices['on_price'] != 'N/A':
+                            item['배당락전일종가'] = prices['before_price']
+                            item['배당락일종가'] = prices['on_price']
+                            has_changed = True
+                            enriched_count += 1
+                    except ValueError:
+                        print(f"     Could not parse date: {item['배당락일']}")
+
+            if enriched_count > 0:
+                print(f"  -> Enriched {enriched_count} entries with price data for {ticker}.")
+
         if has_changed:
             final_history.sort(key=lambda x: datetime.strptime(x['배당락일'], '%y. %m. %d'), reverse=True)
+            final_data_to_save = {"tickerInfo": new_ticker_info, "dividendHistory": final_history}
+            
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(final_data_to_save, f, ensure_ascii=False, indent=2)
             print(f" => UPDATED and saved data for {ticker} to {file_path}")
