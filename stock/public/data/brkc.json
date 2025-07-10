@@ -13,5 +13,10 @@
     "Yield": "N/A",
     "TotalReturn": "N/A"
   },
-  "dividendHistory": []
+  "dividendHistory": [
+    {
+      "배당락일": "25. 07. 10",
+      "배당금": "$0.5029"
+    }
+  ]
 }
