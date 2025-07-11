@@ -132,6 +132,23 @@ const chartDisplayData = computed(() => {
     return filteredData.reverse();
 });
 
+// --- 1. 색상 밝기를 계산하고 대비되는 텍스트 색상을 반환하는 헬퍼 함수 (NEW!) ---
+const getContrastingTextColor = (bgColor) => {
+  // rgba(r, g, b, a) 형식에서 r, g, b 값을 추출
+  const colorMatch = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+  if (!colorMatch) return '#ffffff'; // 기본값 흰색
+
+  const r = parseInt(colorMatch[1]);
+  const g = parseInt(colorMatch[2]);
+  const b = parseInt(colorMatch[3]);
+
+  // 밝기 계산 (YIQ 공식)
+  const luminance = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+
+  // 밝기가 128 이상이면 (밝은 색), 어두운 텍스트를, 그렇지 않으면 밝은 텍스트를 반환
+  return luminance > 128 ? '#000000' : '#ffffff';
+};
+
 const setChartDataAndOptions = (data, frequency) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--p-text-color');
@@ -166,13 +183,20 @@ const setChartDataAndOptions = (data, frequency) => {
         const labels = Object.keys(monthlyAggregated);
         const weekColors = { 1: '#3B82F6', 2: '#EF4444', 3: '#F59E0B', 4: '#10B981', 5: '#F97316' };
         
-        const datasets = [1, 2, 3, 4, 5].map(week => ({
-            type: 'bar', label: `${week}주차`, backgroundColor: weekColors[week],
+       const datasets = [1, 2, 3, 4, 5].map(week => ({
+            type: 'bar',
+            label: `${week}주차`,
+            backgroundColor: weekColors[week],
             data: labels.map(label => monthlyAggregated[label][week] || 0),
+            // --- 2. datalabels의 color 옵션을 동적으로 변경 ---
             datalabels: {
                 display: context => context.dataset.data[context.dataIndex] > 0.0001,
-                formatter: (value) => `$${value.toFixed(4)}`, color: '#fff',
-                font: { size: individualLabelSize, weight: 'bold' }, align: 'center', anchor: 'center'
+                formatter: (value) => `$${value.toFixed(4)}`,
+                // 배경색에 따라 글자색을 동적으로 결정
+                color: (context) => getContrastingTextColor(context.dataset.backgroundColor),
+                font: { size: 10, weight: 'bold' },
+                align: 'center',
+                anchor: 'center'
             }
         }));
         
