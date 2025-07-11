@@ -4,29 +4,53 @@ import os
 import yfinance as yf
 from datetime import datetime, timedelta
 
+# --- get_historical_prices 함수 (타임머신 버그 수정) ---
 def get_historical_prices(ticker_symbol, ex_date_str):
     try:
         ex_date = datetime.strptime(ex_date_str, '%m/%d/%Y')
+        
+        # 1. 오늘 날짜를 시간대 정보 없이 가져옴
+        today = datetime.now().replace(tzinfo=None)
+
+        # 2. 조회하려는 날짜가 오늘보다 미래인지 확인
+        if ex_date.replace(tzinfo=None) > today:
+            # 배당락일이 아직 오지 않았다면, 전일가만 조회 시도
+            before_date_target = ex_date - timedelta(days=1)
+            # 전일조차 아직 오지 않았다면, 아무것도 조회하지 않음
+            if before_date_target.replace(tzinfo=None) > today:
+                return {"before_price": "N/A", "on_price": "N/A"}
+        
+        # 주가 조회 기간 설정 (이전과 동일)
         start_date = ex_date - timedelta(days=7)
         end_date = ex_date + timedelta(days=2)
+        
         ticker = yf.Ticker(ticker_symbol)
         hist = ticker.history(start=start_date, end=end_date)
         if hist.empty: return {"before_price": "N/A", "on_price": "N/A"}
+
+        # 3. 정확한 날짜의 인덱스를 찾아 종가를 가져오는 방식으로 변경
         on_price, before_price = "N/A", "N/A"
+        
+        # 당일가 조회
         try:
-            on_price_val = hist.loc[:ex_date.strftime('%Y-%m-%d')].iloc[-1]['Close']
+            # 정확히 ex_date 날짜의 인덱스가 있는지 확인
+            on_price_val = hist.loc[hist.index.strftime('%Y-%m-%d') == ex_date.strftime('%Y-%m-%d')]['Close'].iloc[0]
             on_price = f"${on_price_val:.2f}"
-        except IndexError: pass
+        except (KeyError, IndexError): pass
+
+        # 전일가 조회
         try:
             before_date_target = ex_date - timedelta(days=1)
-            before_price_val = hist.loc[:before_date_target.strftime('%Y-%m-%d')].iloc[-1]['Close']
+            # 정확히 before_date_target 날짜의 인덱스가 있는지 확인
+            before_price_val = hist.loc[hist.index.strftime('%Y-%m-%d') == before_date_target.strftime('%Y-%m-%d')]['Close'].iloc[0]
             before_price = f"${before_price_val:.2f}"
-        except IndexError: pass
+        except (KeyError, IndexError): pass
+
         return {"before_price": before_price, "on_price": on_price}
     except Exception as e:
-        print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
+        # print(f"     Could not fetch price for {ticker_symbol}. Error: {e}")
         return {"before_price": "N/A", "on_price": "N/A"}
-
+        
 # --- 2. yfinance 전용 범용 스크래퍼 ---
 def scrape_with_yfinance(ticker_symbol, company, frequency, group):
     print(f"Scraping {ticker_symbol.upper()} (Group: {group}) using yfinance API...")
